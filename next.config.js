@@ -3,6 +3,16 @@ const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
 const path = require('path')
 
 const withOffline = require('next-offline')
+
+function withProductionWebpack(config, dev) {
+  if (!dev) {
+    // Work around postcss/cssnano "unprefixed" crash in Next.js 10 production builds
+    config.optimization.minimize = false
+  }
+
+  return config
+}
+
 // const nextOfflineConfig = {
 //   generateInDevMode: false,
 //   dontAutoRegisterSw: true,
@@ -18,7 +28,7 @@ module.exports = (phase) => {
     return {
       /* Localhost on development for next/image component */
       images: {
-        domains: ['localhost', 'res.cloudinary.com'],
+        domains: ['localhost', 'res.cloudinary.com', '79.141.168.50'],
       },
     }
   }
@@ -42,7 +52,7 @@ module.exports = (phase) => {
     // https://nextjs.org/docs/basic-features/image-optimization#configuration
 
     images: {
-      domains: ['res.cloudinary.com'],
+      domains: ['res.cloudinary.com', '79.141.168.50'],
     },
     async rewrites() {
       return [
@@ -51,6 +61,9 @@ module.exports = (phase) => {
           destination: '/_next/static/service-worker.js',
         },
       ]
+    },
+    webpack(config, { dev }) {
+      return withProductionWebpack(config, dev)
     },
   })
 }

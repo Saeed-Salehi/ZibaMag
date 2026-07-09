@@ -14,9 +14,9 @@
   },
   "homepage": "https://github.com/edgarlr/magazine#readme",
   "scripts": {
-    "dev": "next dev",
-    "dev:inspect": "NODE_OPTIONS='--inspect' next dev",
-    "build": "next build",
+    "dev": "NODE_OPTIONS='--openssl-legacy-provider' next dev",
+    "dev:inspect": "NODE_OPTIONS='--inspect --openssl-legacy-provider' next dev",
+    "build": "NODE_OPTIONS='--openssl-legacy-provider' next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",
@@ -70,6 +70,10 @@
     "react-dom": "^17.0.1",
     "react-markdown": "^5.0.3"
   },
+  "resolutions": {
+    "postcss": "8.2.15",
+    "autoprefixer": "10.2.5"
+  },
   "devDependencies": {
     "@types/body-scroll-lock": "^2.6.1",
     "@types/classnames": "^2.2.11",
@@ -79,7 +83,7 @@
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
-    "autoprefixer": "^10.0.2",
+    "autoprefixer": "10.2.5",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
