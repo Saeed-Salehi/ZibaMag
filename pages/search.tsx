@@ -1,30 +1,35 @@
 import { useRouter } from 'next/router'
-// import { useSearch } from '@lib/hooks/use-search'
 import { ArticlesList } from '@components/article'
-import { fetchAPI } from '@lib/api'
+import { fetchAPI, getNavigation } from '@lib/api'
 import { InferGetStaticPropsType } from 'next'
-
+import { NextSeo } from 'next-seo'
+import { Layout } from '@components/common/Layout'
 import SearchInput from '@components/search/SearchInput'
+import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 
 export async function getStaticProps() {
   const categories: TCategory[] = await fetchAPI('/categories')
   const articles: TArticle[] = await fetchAPI('/articles')
-  return { props: { categories, articles } }
+  const navigation: TNavigation = await getNavigation()
+
+  return {
+    props: { categories, articles, navigation },
+    revalidate: REVALIDATE_SECONDS,
+  }
 }
 
 function SearchPage({
   categories,
   articles,
+  navigation,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const { query } = useRouter()
   const { q, category, sort } = query
 
-  // This hook should work with the API
-  // const { isLoading, data } = useSearch<TArticle>('/articles', query)
+  const stringQuery = q ? decodeURIComponent(q as string).toLowerCase() : ''
 
-  // I'm using a filter implementation due heroku sleep problem
   const filteredArticles = articles.filter((a: TArticle) => {
-    const stringQuery = decodeURIComponent(q as string).toLowerCase()
+    if (!stringQuery) return false
     if (category) {
       return (
         a.title.toLowerCase().includes(stringQuery) &&
@@ -41,23 +46,33 @@ function SearchPage({
   })
 
   return (
-    <main className="min-h-screen px-4 pt-6 pb-20 flex flex-col mx-auto md:w-3/4 lg:w-2/3 xl:w-7/12">
-      <SearchInput categories={categories} />
+    <Layout navigation={navigation}>
+      <NextSeo
+        title="Search"
+        description="Search articles across the magazine."
+        canonical={getCanonicalUrl('/search')}
+        noindex
+        nofollow
+      />
+      <main className="min-h-screen px-4 pt-6 pb-20 flex flex-col mx-auto md:w-3/4 lg:w-2/3 xl:w-7/12">
+        <SearchInput categories={categories} />
 
-      {/* {isLoading && <p>Loading...</p>} */}
-      {sortedArticles && sortedArticles.length !== 0 ? (
-        <ArticlesList
-          articles={sortedArticles}
-          title={`${sortedArticles.length} ${
-            sortedArticles.length > 1 ? 'results' : 'result'
-          }`}
-        />
-      ) : (
-        <p className="text-center my-auto text-secondary">
-          We couldn&apos;t find anything
-        </p>
-      )}
-    </main>
+        {sortedArticles.length !== 0 ? (
+          <ArticlesList
+            articles={sortedArticles}
+            title={`${sortedArticles.length} ${
+              sortedArticles.length > 1 ? 'results' : 'result'
+            }`}
+          />
+        ) : (
+          <p className="text-center my-auto text-secondary">
+            {stringQuery
+              ? "We couldn't find anything"
+              : 'Enter a search term to find articles'}
+          </p>
+        )}
+      </main>
+    </Layout>
   )
 }
 

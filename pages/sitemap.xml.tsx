@@ -1,5 +1,6 @@
 import { SITE_URL } from '@lib/constants'
 import { fetchAPI } from '@lib/api'
+import { formatSitemapDate } from '@lib/seo'
 import { NextPageContext } from 'next'
 
 type Props = {
@@ -9,62 +10,52 @@ type Props = {
   contributors: TContributor[]
 }
 
+function urlEntry(loc: string, lastmod?: string, changefreq?: string) {
+  return `
+    <url>
+      <loc>${loc}</loc>${
+    lastmod ? `\n      <lastmod>${lastmod}</lastmod>` : ''
+  }${changefreq ? `\n      <changefreq>${changefreq}</changefreq>` : ''}
+    </url>`
+}
+
 const createSitemap = ({
   articles,
   categories,
   contributors,
   pages,
 }: Props) => `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    <url>
-      <loc>${SITE_URL}</loc>
-    </url>
-
-    ${categories
-      .map(({ slug }) => {
-        return `
-                <url>
-                    <loc>${`${SITE_URL}/${slug}`}</loc>
-                </url>
-            `
-      })
-      .join('')}
-    ${articles
-      .map(({ slug }) => {
-        return `
-                <url>
-                    <loc>${`${SITE_URL}/articles/${slug}`}</loc>
-                    <changefreq>daily</changefreq>
-                </url>
-            `
-      })
-      .join('')}
-    ${pages
-      .map(({ slug }) => {
-        return `
-                <url>
-                    <loc>${`${SITE_URL}/pages/${slug}`}</loc>
-                </url>
-            `
-      })
-      .join('')}
-
-    <url>
-      <loc>${`${SITE_URL}/contributors`}</loc>
-    </url>
-
-    ${contributors
-      .map(({ slug }) => {
-        return `
-                <url>
-                    <loc>${`${SITE_URL}/contributors/${slug}`}</loc>
-                </url>
-            `
-      })
-      .join('')}
-    </urlset>
-    `
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urlEntry(SITE_URL)}
+  ${categories
+    .map(({ slug, updated_at }) =>
+      urlEntry(`${SITE_URL}/${slug}`, formatSitemapDate(updated_at))
+    )
+    .join('')}
+  ${articles
+    .map(({ slug, updated_at }) =>
+      urlEntry(
+        `${SITE_URL}/articles/${slug}`,
+        formatSitemapDate(updated_at),
+        'weekly'
+      )
+    )
+    .join('')}
+  ${pages
+    .map(({ slug, updated_at }) =>
+      urlEntry(`${SITE_URL}/pages/${slug}`, formatSitemapDate(updated_at))
+    )
+    .join('')}
+  ${urlEntry(`${SITE_URL}/contributors`)}
+  ${contributors
+    .map(({ slug, updated_at }) =>
+      urlEntry(
+        `${SITE_URL}/contributors/${slug}`,
+        formatSitemapDate(updated_at)
+      )
+    )
+    .join('')}
+</urlset>`
 
 export async function getServerSideProps({ res }: NextPageContext) {
   const [categories, articles, pages, contributors]: [
@@ -78,13 +69,16 @@ export async function getServerSideProps({ res }: NextPageContext) {
     fetchAPI('/pages'),
     fetchAPI('/contributors'),
   ])
+
   res?.setHeader('Content-Type', 'text/xml')
+  res?.setHeader(
+    'Cache-Control',
+    'public, s-maxage=3600, stale-while-revalidate=86400'
+  )
   res?.write(createSitemap({ categories, articles, pages, contributors }))
   res?.end()
-  return {
-    props: {}, // will be passed to the page component as props
-  }
+
+  return { props: {} }
 }
 
-// Nullish component
 export default () => null

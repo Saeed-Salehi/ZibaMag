@@ -7,6 +7,7 @@ import { get } from 'idb-keyval'
 import { Article } from '@components/article'
 import { Layout } from '@components/common/Layout'
 import ArrowLeft from '@components/icons/ArrowLeft'
+import { NextSeo } from 'next-seo'
 
 function ArticlePage() {
   const [article, setArticle] = useState<TArticle | 'loading' | null>('loading')
@@ -34,6 +35,7 @@ function ArticlePage() {
 
   return (
     <Layout>
+      <NextSeo noindex nofollow title="Saved article" />
       <Link href={'/lists'}>
         <a aria-label="Go back">
           <ArrowLeft />

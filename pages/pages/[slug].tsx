@@ -1,28 +1,16 @@
 import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
-import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
-import { useRouter } from 'next/router'
-import Custom404 from 'pages/404'
-import { NextSeo } from 'next-seo'
+import { GetStaticPropsContext } from 'next'
 import ExitPreviewButton from '@components/common/ExitPreviewButton'
+import { NextSeo } from 'next-seo'
 import { Layout } from '@components/common/Layout'
 import Markdown from '@components/common/Markdown/Markdown'
 import Image from 'next/image'
+import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
 
 export async function getStaticPaths() {
-  // If you don't have too many pages or simply prefer to generate
-  // all pages at build time, to you can uncomment this code below.
-
-  // IMPORTANT! You MUST have at list one page published on your CMS
-
-  // const slugs: TPage[] = await fetchAPI('/pages')
-  // return {
-  //   paths: slugs.map((page) => `/pages/${page.slug}`),
-  //   fallback: true, // Needs to be `true` to enable preview mode
-  // }
-
   return {
     paths: [],
-    fallback: 'blocking', // `blocking` insted of `true` for better SEO https://nextjs.org/docs/basic-features/data-fetching#fallback-blocking
+    fallback: 'blocking',
   }
 }
 
@@ -39,33 +27,37 @@ export async function getStaticProps({
   )[0]
   const navigation: TNavigation = await getNavigation()
 
-  // No props will trigger a 404
-  if (!page) return { props: {} }
-  return { props: { page, navigation, preview } }
+  if (!page) return { notFound: true }
+
+  return {
+    props: { page, navigation, preview },
+    revalidate: REVALIDATE_SECONDS,
+  }
 }
 
 function PagesPage({
   page,
   preview,
   navigation,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { isFallback } = useRouter()
-
-  if (!isFallback && !page) {
-    return <Custom404 />
-  }
+}: {
+  page: TPage
+  preview: boolean
+  navigation: TNavigation
+}) {
+  const canonical = getCanonicalUrl(`/pages/${page.slug}`)
 
   return (
     <Layout navigation={navigation} isMarkdown>
       <NextSeo
-        title={page?.title}
-        description={page?.description}
+        title={page.title}
+        description={page.description}
+        canonical={canonical}
+        {...getPreviewRobots(preview)}
         openGraph={{
-          title: page?.title,
-          description: page?.description,
-          // Only include OG image if exists
-          // This will break disabling Strapi Image Optimization
-          ...(page?.cover && {
+          title: page.title,
+          description: page.description,
+          url: canonical,
+          ...(page.cover && {
             images: Object.values(page.cover.formats).map((image) => {
               return {
                 url: getMediaURL(image?.url),
@@ -78,10 +70,10 @@ function PagesPage({
       />
 
       <header>
-        <h1 className="serif pb-4">{page?.title}</h1>
+        <h1 className="serif pb-4">{page.title}</h1>
       </header>
 
-      {page?.cover && (
+      {page.cover && (
         <div className="mt-4 mb-8">
           <Image
             src={getMediaURL(
@@ -94,7 +86,7 @@ function PagesPage({
         </div>
       )}
 
-      <Markdown content={page?.content} />
+      <Markdown content={page.content} />
       {preview && <ExitPreviewButton />}
     </Layout>
   )

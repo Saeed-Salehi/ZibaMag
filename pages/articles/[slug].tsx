@@ -1,37 +1,27 @@
 import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
-import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
-import { useRouter } from 'next/router'
+import { GetStaticPropsContext } from 'next'
 import { Article } from '@components/article'
 import { ArticleJsonLd, NextSeo } from 'next-seo'
 import ExitPreviewButton from '@components/common/ExitPreviewButton'
 import { Layout } from '@components/common/Layout'
 import ArrowLeft from '@components/icons/ArrowLeft'
-import Custom404 from 'pages/404'
 import { Button } from '@components/ui/Button'
-import { SITE_LOGO, SITE_NAME, SITE_URL } from '@lib/constants'
+import { SITE_LOGO, SITE_NAME } from '@lib/constants'
+import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
 
 export async function getStaticPaths() {
   const articles: TArticle[] = await fetchAPI('/articles')
 
   return {
     paths: articles.map((article) => `/articles/${article.slug}`),
-    fallback: true, // Needs to be `true` to enable preview mode
+    fallback: 'blocking',
   }
-
-  // If you have too many articles you can pass no paths at all an generate all the pages at request time.
-  // Read more on https://nextjs.org/docs/basic-features/data-fetching#getstaticpaths-static-generation
-
-  // return {
-  //   paths: [],
-  //   fallback: 'blocking', `blocking` insted of `true` for better SEO https://nextjs.org/docs/basic-features/data-fetching#fallback-blocking
-  // }
 }
 
 export async function getStaticProps({
   params,
   preview = false,
 }: GetStaticPropsContext<{ slug: string }>) {
-  // if is preview it will search on to the unpublished entries as well
   const article: TArticle = (
     await fetchAPI(
       `/articles?slug=${params?.slug}${
@@ -42,46 +32,46 @@ export async function getStaticProps({
 
   const navigation: TNavigation = await getNavigation()
 
-  // No props will trigger a 404
-  if (!article) return { props: {} }
-  return { props: { preview, navigation, article } }
+  if (!article) return { notFound: true }
+
+  return {
+    props: { preview, navigation, article },
+    revalidate: REVALIDATE_SECONDS,
+  }
 }
 
 function ArticlePage({
   article,
   navigation,
   preview,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { isFallback } = useRouter()
-
-  if (!isFallback && !article) {
-    return <Custom404 />
-  }
-
-  const fullURL = `${SITE_URL}/articles/${article?.slug}`
+}: {
+  article: TArticle
+  navigation: TNavigation
+  preview: boolean
+}) {
+  const fullURL = getCanonicalUrl(`/articles/${article.slug}`)
+  const authorURL = getCanonicalUrl(`/contributors/${article.author.slug}`)
 
   return (
     <Layout navigation={navigation} isMarkdown>
       <NextSeo
-        title={article?.title}
-        description={article?.description}
+        title={article.title}
+        description={article.description}
+        canonical={fullURL}
+        {...getPreviewRobots(preview)}
         openGraph={{
-          title: article?.title,
-          description: article?.description,
+          title: article.title,
+          description: article.description,
           url: fullURL,
           type: 'article',
           article: {
-            publishedTime: article?.published_at as string,
-            modifiedTime: article?.updated_at as string,
-            section: article?.category.title,
-            authors: [
-              `'https://www.example.com/contributors/'${article?.author.slug}`,
-            ],
-            tags: [`${article?.category.title}`],
+            publishedTime: article.published_at as string,
+            modifiedTime: article.updated_at as string,
+            section: article.category.title,
+            authors: [authorURL],
+            tags: [article.category.title],
           },
-          // Only include OG image if exists
-          // This will break disabling Strapi Image Optimization
-          ...(article?.cover && {
+          ...(article.cover && {
             images: Object.values(article.cover.formats).map((image) => {
               return {
                 url: getMediaURL(image?.url),
@@ -94,17 +84,15 @@ function ArticlePage({
       />
       <ArticleJsonLd
         url={fullURL}
-        title={article?.title as string}
-        datePublished={article?.published_at as string}
-        dateModified={article?.updated_at as string}
-        authorName={[article?.author.name as string]}
+        title={article.title as string}
+        datePublished={article.published_at as string}
+        dateModified={article.updated_at as string}
+        authorName={[article.author.name as string]}
         publisherName={SITE_NAME}
         publisherLogo={SITE_LOGO}
-        description={article?.description as string}
-        // Only include images if exists
-        // This will break disabling Strapi Image Optimization
+        description={article.description as string}
         images={
-          article?.cover
+          article.cover
             ? Object.values(article.cover.formats).map((image) => {
                 return getMediaURL(image?.url)
               })

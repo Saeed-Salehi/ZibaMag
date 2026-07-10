@@ -94,7 +94,6 @@ const Head = () => {
         {/* Dynamic favicon */}
         {!systemTheme || systemTheme === 'light' ? (
           <>
-            å
             <link
               rel="icon"
               type="image/png"

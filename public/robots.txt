@@ -1,2 +1,0 @@
-User-agent: *
-Sitemap: https://magazine-starter.vercel.app/sitemap.xml

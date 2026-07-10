@@ -1,15 +1,21 @@
 import { InferGetStaticPropsType } from 'next'
+import { NextSeo } from 'next-seo'
 import { ArticlesCarousel, ArticlesList } from '@components/article'
 import { fetchAPI, getNavigation } from '@lib/api'
 import { Layout } from '@components/common/Layout'
 import { useMediaQuery } from '@lib/hooks/use-media-queries'
 import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
+import { SEO_DESCRIPTION, SITE_NAME, SITE_URL } from '@lib/constants'
+import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 
 export async function getStaticProps() {
   const articles: TArticle[] = await fetchAPI('/articles')
   const navigation: TNavigation = await getNavigation()
 
-  return { props: { articles, navigation } }
+  return {
+    props: { articles, navigation },
+    revalidate: REVALIDATE_SECONDS,
+  }
 }
 
 function Home({
@@ -20,6 +26,16 @@ function Home({
 
   return (
     <Layout navigation={navigation}>
+      <NextSeo
+        title={SITE_NAME}
+        description={SEO_DESCRIPTION}
+        canonical={getCanonicalUrl('/')}
+        openGraph={{
+          title: SITE_NAME,
+          description: SEO_DESCRIPTION,
+          url: SITE_URL,
+        }}
+      />
       {isTablet ? (
         //Tablet and smaller devices
         <ArticlesCarousel title="Top stories" articles={articles.slice(0, 4)} />

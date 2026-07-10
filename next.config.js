@@ -1,27 +1,7 @@
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
-
 const path = require('path')
 
 const withOffline = require('next-offline')
-
-function withProductionWebpack(config, dev) {
-  if (!dev) {
-    // Work around postcss/cssnano "unprefixed" crash in Next.js 10 production builds
-    config.optimization.minimize = false
-  }
-
-  return config
-}
-
-// const nextOfflineConfig = {
-//   generateInDevMode: false,
-//   dontAutoRegisterSw: true,
-//   generateSw: false,
-//   workboxOpts: {
-//     swDest: 'static/service-worker.js',
-//     swSrc: path.join(__dirname, 'sw.js'),
-//   },
-// }
 
 module.exports = (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
@@ -61,9 +41,6 @@ module.exports = (phase) => {
           destination: '/_next/static/service-worker.js',
         },
       ]
-    },
-    webpack(config, { dev }) {
-      return withProductionWebpack(config, dev)
     },
   })
 }

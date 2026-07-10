@@ -1,30 +1,20 @@
 import { ArticlesList } from '@components/article'
-import { fetchAPI, getMediaURL } from '@lib/api'
-import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
-import { useRouter } from 'next/router'
+import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
+import { GetStaticPropsContext } from 'next'
 import ExternalLink from '@components/ui/Link/ExternalLink'
 import Image from 'next/image'
 import { Layout } from '@components/common/Layout'
-import Custom404 from 'pages/404'
 import Twitter from '@components/icons/Twitter'
-import { BreadcrumbJsonLd, SocialProfileJsonLd } from 'next-seo'
-import { SITE_URL } from '@lib/constants'
+import { BreadcrumbJsonLd, NextSeo, SocialProfileJsonLd } from 'next-seo'
+import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 
 export async function getStaticPaths() {
   const slugs: TContributor[] = await fetchAPI('/contributors')
 
   return {
     paths: slugs.map((contributor) => `/contributors/${contributor.slug}`),
-    fallback: false,
+    fallback: 'blocking',
   }
-
-  // If you have too many contributors you can pass no paths at all an generate all the pages at request time.
-  // Read more on https://nextjs.org/docs/basic-features/data-fetching#getstaticpaths-static-generation
-
-  // return {
-  //   paths: [],
-  //   fallback: 'blocking',
-  // }
 }
 
 export async function getStaticProps({
@@ -34,30 +24,33 @@ export async function getStaticProps({
     await fetchAPI(`/contributors?slug=${params?.slug}`)
   )[0]
 
+  if (!contributor) return { notFound: true }
+
   const articles: TArticle[] = await fetchAPI(
     `/articles?author.slug=${params?.slug}`
   )
+  const navigation: TNavigation = await getNavigation()
 
-  // No props will trigger a 404
-  if (!contributor) return { props: {} }
-  return { props: { contributor, articles } }
+  return {
+    props: { contributor, articles, navigation },
+    revalidate: REVALIDATE_SECONDS,
+  }
 }
 
 function ContributorPage({
   contributor,
   articles,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { isFallback } = useRouter()
-
-  if (!isFallback && !contributor) {
-    return <Custom404 />
-  }
-
-  // if featuared is diferent than undefined it will be true
-  const isFeatured = !!contributor?.featured
+  navigation,
+}: {
+  contributor: TContributor
+  articles: TArticle[]
+  navigation: TNavigation
+}) {
+  const isFeatured = !!contributor.featured
+  const canonical = getCanonicalUrl(`/contributors/${contributor.slug}`)
 
   const thumbnailUrl = getMediaURL(
-    contributor?.featured?.profile_image.formats.thumbnail?.url
+    contributor.featured?.profile_image.formats.thumbnail?.url
   )
 
   const contributorSocialMedia = (urls: TContributor['urls']) => {
@@ -73,13 +66,43 @@ function ContributorPage({
     ].filter((elem) => elem !== null)
   }
 
+  const description =
+    contributor.featured?.description ||
+    `Articles by ${contributor.name}${
+      contributor.role ? `, ${contributor.role}` : ''
+    }.`
+
   return (
-    <Layout>
+    <Layout navigation={navigation}>
+      <NextSeo
+        title={contributor.name}
+        description={description}
+        canonical={canonical}
+        openGraph={{
+          title: contributor.name,
+          description,
+          url: canonical,
+          ...(isFeatured &&
+            contributor.featured?.profile_image && {
+              images: [
+                {
+                  url: thumbnailUrl,
+                  width:
+                    contributor.featured.profile_image.formats.thumbnail?.width,
+                  height:
+                    contributor.featured.profile_image.formats.thumbnail
+                      ?.height,
+                },
+              ],
+            }),
+        }}
+      />
+
       <SocialProfileJsonLd
         type="Person"
-        name={contributor?.name as string}
-        url={`${SITE_URL}/contributors/${contributor?.slug}`}
-        sameAs={contributorSocialMedia(contributor?.urls) as []}
+        name={contributor.name}
+        url={canonical}
+        sameAs={contributorSocialMedia(contributor.urls) as []}
       />
 
       <BreadcrumbJsonLd
@@ -87,12 +110,12 @@ function ContributorPage({
           {
             position: 1,
             name: 'Contributors',
-            item: `${SITE_URL}/contributors`,
+            item: getCanonicalUrl('/contributors'),
           },
           {
             position: 2,
-            name: contributor?.name as string,
-            item: `${SITE_URL}/contributors/${contributor?.name}`,
+            name: contributor.name,
+            item: canonical,
           },
         ]}
       />
@@ -103,30 +126,28 @@ function ContributorPage({
             <Image
               src={thumbnailUrl}
               className="rounded-full"
-              alt={`${contributor?.name} profile`}
+              alt={`${contributor.name} profile`}
               layout="fill"
             />
           </figure>
         )}
-        <h1 className="serif mt-0 text-2xl">{contributor?.name}</h1>
-        <p className="text-sm font-serif uppercase  mb-2">
-          {contributor?.role}
-        </p>
-        {contributor?.urls?.twitter && (
+        <h1 className="serif mt-0 text-2xl">{contributor.name}</h1>
+        <p className="text-sm font-serif uppercase  mb-2">{contributor.role}</p>
+        {contributor.urls?.twitter && (
           <ExternalLink
-            to={`https://twitter.com/${contributor?.urls.twitter}`}
+            to={`https://twitter.com/${contributor.urls.twitter}`}
             ariaLabel="Contributor's twitter"
             className="flex w-max mx-auto items-center opacity-60 hover:opacity-100"
           >
             <span className="mr-2">
               <Twitter width="18" height="18" />
             </span>
-            {contributor?.urls.twitter}
+            {contributor.urls.twitter}
           </ExternalLink>
         )}
         {isFeatured && (
           <p className="text-center py-2 leading-tight mt-8 lg:w-4/6 lg:mx-auto">
-            {contributor?.featured?.description}
+            {contributor.featured?.description}
           </p>
         )}
       </section>
