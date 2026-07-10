@@ -1,27 +1,29 @@
 import { Date } from '@components/ui/Date'
-import { getMediaURL } from '@lib/api'
 import Link from 'next/link'
 import s from './ArticleCard.module.css'
 import cn from 'classnames'
 import Image from 'next/image'
 import ActionButtons from '../Article/ActionButtons'
 import { STRINGS } from '@lib/strings'
+import { getCoverMediaUrl } from '@lib/cover'
 
 const ArticleCardList = ({ article }: { article: TArticle }) => {
+  const coverUrl = getCoverMediaUrl(article.cover)
+
   return (
     <article className={s.lists}>
-      <Link href={`/lists/${article.slug}`}>
-        <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
-          <Image
-            src={getMediaURL(
-              article.cover.formats.medium?.url || article.cover.url
-            )}
-            alt={article.cover.alternativeText || ''}
-            layout="fill"
-            className="object-cover"
-          />
-        </a>
-      </Link>
+      {coverUrl && (
+        <Link href={`/lists/${article.slug}`}>
+          <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
+            <Image
+              src={coverUrl}
+              alt={article.cover?.alternativeText || ''}
+              layout="fill"
+              className="object-cover"
+            />
+          </a>
+        </Link>
+      )}
 
       <section className="pt-4">
         <Link href={`/${article.category.slug}`}>
@@ -44,9 +46,7 @@ const ArticleCardList = ({ article }: { article: TArticle }) => {
         <div className="serif text-s">
           {STRINGS.by}{' '}
           <Link href={`/contributors/${article.author.slug}`}>
-            <a className="pl-1 pr-2 font-bold hover:underline">
-              {article.author.name}
-            </a>
+            <a className="hover:underline">{article.author.name}</a>
           </Link>
         </div>
         <Date date={article.published_at as string} />

@@ -1,5 +1,6 @@
 import { set, get, del, keys } from 'idb-keyval'
 import { getMediaURL } from './api'
+import { getCoverUrl } from './cover'
 
 type SWR = ServiceWorkerRegistration & { index?: any }
 
@@ -16,7 +17,7 @@ async function registerContent(article: TArticle) {
       category: 'article',
       icons: [
         {
-          src: getMediaURL(article.cover.formats.thumbnail?.url),
+          src: getMediaURL(getCoverUrl(article.cover, 'thumbnail')),
         },
       ],
     })

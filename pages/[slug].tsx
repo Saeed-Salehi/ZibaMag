@@ -1,13 +1,14 @@
 import { ArticlesCarousel, ArticlesList } from '@components/article'
 import { Hero } from '@components/common/Hero'
 import { GetStaticPropsContext } from 'next'
-import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
+import { fetchAPI, getNavigation } from '@lib/api'
 import { NextSeo } from 'next-seo'
 import { Layout } from '@components/common/Layout'
 import { useMediaQuery } from '@lib/hooks/use-media-queries'
 import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
+import { getCoverOgImages } from '@lib/cover'
 
 export async function getStaticPaths() {
   const categories: TCategory[] = await fetchAPI('/categories')
@@ -62,14 +63,8 @@ function CategoryPage({
         title: category.title,
         description: category.description,
         url: canonical,
-        ...(category.cover && {
-          images: Object.values(category.cover.formats).map((image) => {
-            return {
-              url: getMediaURL(image?.url),
-              width: image?.width,
-              height: image?.height,
-            }
-          }),
+        ...(getCoverOgImages(category.cover).length > 0 && {
+          images: getCoverOgImages(category.cover),
         }),
       }}
     />

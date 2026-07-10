@@ -1,5 +1,5 @@
 import { ArticlesList } from '@components/article'
-import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
+import { fetchAPI, getNavigation } from '@lib/api'
 import { GetStaticPropsContext } from 'next'
 import ExternalLink from '@components/ui/Link/ExternalLink'
 import Image from 'next/image'
@@ -8,6 +8,7 @@ import Twitter from '@components/icons/Twitter'
 import { BreadcrumbJsonLd, NextSeo, SocialProfileJsonLd } from 'next-seo'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
+import { getCoverMediaUrl, getCoverOgImages } from '@lib/cover'
 
 export async function getStaticPaths() {
   const slugs: TContributor[] = await fetchAPI('/contributors')
@@ -50,9 +51,9 @@ function ContributorPage({
   const isFeatured = !!contributor.featured
   const canonical = getCanonicalUrl(`/contributors/${contributor.slug}`)
 
-  const thumbnailUrl = getMediaURL(
-    contributor.featured?.profile_image.formats.thumbnail?.url
-  )
+  const profileImage = contributor.featured?.profile_image
+  const thumbnailUrl = getCoverMediaUrl(profileImage, 'thumbnail')
+  const profileOgImages = getCoverOgImages(profileImage)
 
   const contributorSocialMedia = (urls: TContributor['urls']) => {
     if (!urls) return []
@@ -82,17 +83,8 @@ function ContributorPage({
           description,
           url: canonical,
           ...(isFeatured &&
-            contributor.featured?.profile_image && {
-              images: [
-                {
-                  url: thumbnailUrl,
-                  width:
-                    contributor.featured.profile_image.formats.thumbnail?.width,
-                  height:
-                    contributor.featured.profile_image.formats.thumbnail
-                      ?.height,
-                },
-              ],
+            profileOgImages.length > 0 && {
+              images: profileOgImages,
             }),
         }}
       />
@@ -120,7 +112,7 @@ function ContributorPage({
       />
 
       <section className="text-center py-4">
-        {isFeatured && (
+        {isFeatured && thumbnailUrl && (
           <figure className="relative w-24 h-24 mx-auto my-6">
             <Image
               src={thumbnailUrl}

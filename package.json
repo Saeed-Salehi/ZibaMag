@@ -14,9 +14,9 @@
   },
   "homepage": "https://github.com/edgarlr/magazine#readme",
   "scripts": {
-    "dev": "NODE_OPTIONS='--openssl-legacy-provider' next dev",
-    "dev:inspect": "NODE_OPTIONS='--inspect --openssl-legacy-provider' next dev",
-    "build": "NODE_OPTIONS='--openssl-legacy-provider' next build",
+    "dev": "node scripts/run-next.js dev",
+    "dev:inspect": "NODE_OPTIONS='--inspect' node scripts/run-next.js dev",
+    "build": "node scripts/run-next.js build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",

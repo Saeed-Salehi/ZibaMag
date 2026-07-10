@@ -3,12 +3,14 @@ import { Markdown } from '@components/common/Markdown'
 import AuthorCard from './AuthorCard'
 import { Date } from '@components/ui/Date'
 import ActionButtons from './ActionButtons'
-import { getMediaURL } from '@lib/api'
 import Image from 'next/image'
 import { STRINGS } from '@lib/strings'
+import { getCoverMediaUrl } from '@lib/cover'
 
 function Article({ article }: { article: TArticle | undefined }) {
   if (!article) return <p>{STRINGS.somethingWentWrong}</p>
+
+  const coverUrl = getCoverMediaUrl(article.cover, 'medium')
 
   return (
     <article>
@@ -24,9 +26,7 @@ function Article({ article }: { article: TArticle | undefined }) {
         <p className="mb-2">
           {STRINGS.by}{' '}
           <Link href={`/contributors/${article.author.slug}`}>
-            <a className="pl-1 pr-2 font-bold hover:underline">
-              {article.author.name}
-            </a>
+            <a className="font-bold">{article.author.name}</a>
           </Link>
         </p>
 
@@ -34,16 +34,16 @@ function Article({ article }: { article: TArticle | undefined }) {
 
         <ActionButtons article={article} />
 
-        <div className="my-8">
-          <Image
-            src={getMediaURL(
-              article.cover.formats.medium?.url || article.cover.url
-            )}
-            alt={article.cover.alternativeText || ''}
-            width={article.cover.width}
-            height={article.cover.height}
-          />
-        </div>
+        {coverUrl && article.cover && (
+          <div className="my-8">
+            <Image
+              src={coverUrl}
+              alt={article.cover.alternativeText || ''}
+              width={article.cover.width}
+              height={article.cover.height}
+            />
+          </div>
+        )}
       </header>
 
       <Markdown content={article.content} />

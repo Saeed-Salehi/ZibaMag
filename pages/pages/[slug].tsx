@@ -1,4 +1,4 @@
-import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
+import { fetchAPI, getNavigation } from '@lib/api'
 import { GetStaticPropsContext } from 'next'
 import ExitPreviewButton from '@components/common/ExitPreviewButton'
 import { NextSeo } from 'next-seo'
@@ -6,6 +6,7 @@ import { Layout } from '@components/common/Layout'
 import Markdown from '@components/common/Markdown/Markdown'
 import Image from 'next/image'
 import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
+import { getCoverOgImages, getCoverMediaUrl } from '@lib/cover'
 
 export async function getStaticPaths() {
   return {
@@ -57,14 +58,8 @@ function PagesPage({
           title: page.title,
           description: page.description,
           url: canonical,
-          ...(page.cover && {
-            images: Object.values(page.cover.formats).map((image) => {
-              return {
-                url: getMediaURL(image?.url),
-                width: image?.width,
-                height: image?.height,
-              }
-            }),
+          ...(getCoverOgImages(page.cover).length > 0 && {
+            images: getCoverOgImages(page.cover),
           }),
         }}
       />
@@ -73,15 +68,13 @@ function PagesPage({
         <h1 className="serif pb-4">{page.title}</h1>
       </header>
 
-      {page.cover && (
+      {getCoverMediaUrl(page.cover) && page.cover && (
         <div className="mt-4 mb-8">
           <Image
-            src={getMediaURL(
-              page.cover?.formats.medium?.url || page?.cover?.url
-            )}
-            alt={page?.cover?.alternativeText || ''}
-            width={page?.cover?.width}
-            height={page?.cover?.height}
+            src={getCoverMediaUrl(page.cover)!}
+            alt={page.cover.alternativeText || ''}
+            width={page.cover.width}
+            height={page.cover.height}
           />
         </div>
       )}

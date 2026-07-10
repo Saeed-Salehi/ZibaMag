@@ -1,10 +1,10 @@
 import { Date } from '@components/ui/Date'
-import { getMediaURL } from '@lib/api'
 import Link from 'next/link'
 import s from './ArticleCard.module.css'
 import cn from 'classnames'
 import Image from 'next/image'
 import { STRINGS } from '@lib/strings'
+import { getCoverMediaUrl } from '@lib/cover'
 
 type Props = {
   article: TArticle
@@ -16,21 +16,22 @@ const ArticleCard = ({ article, variant = 'default' }: Props) => {
     [s.default]: variant === 'default',
     [s.carousel]: variant === 'carousel',
   })
+  const coverUrl = getCoverMediaUrl(article.cover)
 
   return (
     <article className={rootClassName}>
-      <Link href={`/articles/${article.slug}`}>
-        <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
-          <Image
-            src={getMediaURL(
-              article.cover.formats.medium?.url || article.cover.url
-            )}
-            alt={article.cover.alternativeText || ''}
-            layout="fill"
-            className="object-cover"
-          />
-        </a>
-      </Link>
+      {coverUrl && (
+        <Link href={`/articles/${article.slug}`}>
+          <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
+            <Image
+              src={coverUrl}
+              alt={article.cover?.alternativeText || ''}
+              layout="fill"
+              className="object-cover"
+            />
+          </a>
+        </Link>
+      )}
 
       <section className="pt-4">
         <Link href={`/${article.category.slug}`}>

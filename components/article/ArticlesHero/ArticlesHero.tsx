@@ -1,5 +1,4 @@
 import { Date } from '@components/ui/Date'
-import { getMediaURL } from '@lib/api'
 import Link from 'next/link'
 import s from '../ArticleCard/ArticleCard.module.css'
 import cn from 'classnames'
@@ -7,35 +6,39 @@ import Image from 'next/image'
 import ArticleCardTop from '../ArticleCard/ArticleCardTop'
 import ActionButtons from '../Article/ActionButtons'
 import { STRINGS } from '@lib/strings'
+import { getCoverMediaUrl } from '@lib/cover'
 
 const ArticlesHero = ({ articles }: { articles: TArticle[] }) => {
+  const heroArticle =
+    articles.find((article) => getCoverMediaUrl(article.cover)) || articles[0]
+  const coverUrl = getCoverMediaUrl(heroArticle.cover)
+
   return (
     <section className="mb-4 flex justify-between items-center">
       <div style={{ width: '45%' }}>
         <article className={s.hero}>
-          <Link href={`/articles/${articles[0].slug}`}>
-            <a aria-label={STRINGS.linkTo(articles[0].title)}>
-              <div className={s.cover}>
-                <Image
-                  src={getMediaURL(
-                    articles[0].cover.formats.medium?.url ||
-                      articles[0].cover.url
-                  )}
-                  alt={articles[0].cover.alternativeText || ''}
-                  layout="fill"
-                  className="object-cover"
-                />
-              </div>
+          <Link href={`/articles/${heroArticle.slug}`}>
+            <a aria-label={STRINGS.linkTo(heroArticle.title)}>
+              {coverUrl && (
+                <div className={s.cover}>
+                  <Image
+                    src={coverUrl}
+                    alt={heroArticle.cover?.alternativeText || ''}
+                    layout="fill"
+                    className="object-cover"
+                  />
+                </div>
+              )}
             </a>
           </Link>
 
           <section className="pt-8">
-            <Link href={`/${articles[0].category.slug}`}>
+            <Link href={`/${heroArticle.category.slug}`}>
               <a className="text-sm font-bold px-2 py-1 text-accent border border-accent rounded-sm hover:underline">
-                {articles[0].category.title}
+                {heroArticle.category.title}
               </a>
             </Link>
-            <Link href={`/articles/${articles[0].slug}`}>
+            <Link href={`/articles/${heroArticle.slug}`}>
               <a>
                 <h3
                   className={cn(
@@ -43,25 +46,25 @@ const ArticlesHero = ({ articles }: { articles: TArticle[] }) => {
                     'serif leading-tight overflow-hidden max-h-28 mt-4 mb-2 hover:underline'
                   )}
                 >
-                  {articles[0].title}
+                  {heroArticle.title}
                 </h3>
               </a>
             </Link>
             <div className="flex text-sm w-full items-center">
               <div className="flex self-end items-center">
                 {STRINGS.by}
-                <Link href={`/contributors/${articles[0].author.slug}`}>
+                <Link href={`/contributors/${heroArticle.author.slug}`}>
                   <a className="pl-1 pr-2 font-bold hover:underline">
-                    {articles[0].author.name}
+                    {heroArticle.author.name}
                   </a>
                 </Link>
                 {' | '}
                 <Date
                   className="px-2"
-                  date={articles[0].published_at as string}
+                  date={heroArticle.published_at as string}
                 />
               </div>
-              <ActionButtons article={articles[0]} />
+              <ActionButtons article={heroArticle} />
             </div>
           </section>
         </article>

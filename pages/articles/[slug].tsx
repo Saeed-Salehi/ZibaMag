@@ -1,4 +1,4 @@
-import { fetchAPI, getMediaURL, getNavigation } from '@lib/api'
+import { fetchAPI, getNavigation } from '@lib/api'
 import { GetStaticPropsContext } from 'next'
 import { Article } from '@components/article'
 import { ArticleJsonLd, NextSeo } from 'next-seo'
@@ -9,6 +9,7 @@ import { Button } from '@components/ui/Button'
 import { SITE_LOGO, SITE_NAME } from '@lib/constants'
 import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
+import { getCoverOgImages, getCoverOgImageUrls } from '@lib/cover'
 
 export async function getStaticPaths() {
   const articles: TArticle[] = await fetchAPI('/articles')
@@ -72,14 +73,8 @@ function ArticlePage({
             authors: [authorURL],
             tags: [article.category.title],
           },
-          ...(article.cover && {
-            images: Object.values(article.cover.formats).map((image) => {
-              return {
-                url: getMediaURL(image?.url),
-                width: image?.width,
-                height: image?.height,
-              }
-            }),
+          ...(getCoverOgImages(article.cover).length > 0 && {
+            images: getCoverOgImages(article.cover),
           }),
         }}
       />
@@ -92,13 +87,7 @@ function ArticlePage({
         publisherName={SITE_NAME}
         publisherLogo={SITE_LOGO}
         description={article.description as string}
-        images={
-          article.cover
-            ? Object.values(article.cover.formats).map((image) => {
-                return getMediaURL(image?.url)
-              })
-            : []
-        }
+        images={getCoverOgImageUrls(article.cover)}
       />
 
       <Button ariaLabel={STRINGS.goBack} href="/" className="-ml-2 back-button">
