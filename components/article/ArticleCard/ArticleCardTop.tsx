@@ -29,9 +29,9 @@ const ArticleCardTop = ({ article, index }: Props) => {
 
         <div className="text-sm flex flex-wrap">
           <p>
-            {STRINGS.by}
+            {STRINGS.by}{' '}
             <Link href={`/contributors/${article.author.slug}`}>
-              <a className="pl-1 pr-2 font-bold hover:underline">
+              <a className="pr-1 font-bold hover:underline">
                 {article.author.name}
               </a>
             </Link>

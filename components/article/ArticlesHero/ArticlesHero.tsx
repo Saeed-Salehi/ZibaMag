@@ -52,7 +52,7 @@ const ArticlesHero = ({ articles }: { articles: TArticle[] }) => {
             </Link>
             <div className="flex text-sm w-full items-center">
               <div className="flex self-end items-center">
-                {STRINGS.by}
+                {STRINGS.by}{' '}
                 <Link href={`/contributors/${heroArticle.author.slug}`}>
                   <a className="pl-1 pr-2 font-bold hover:underline">
                     {heroArticle.author.name}
