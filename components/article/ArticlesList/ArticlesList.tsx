@@ -15,6 +15,8 @@ const ArticlesList = ({
   variant = 'default',
   className = '',
 }: Props) => {
+  if (articles.length === 0) return null
+
   const renderCards = () => {
     if (variant === 'lists') {
       return articles.map((article) => (

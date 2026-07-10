@@ -9,6 +9,7 @@ import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
 import { getCoverOgImages } from '@lib/cover'
+import { getArticlePageSections } from '@lib/article-sections'
 
 export async function getStaticPaths() {
   const categories: TCategory[] = await fetchAPI('/categories')
@@ -53,6 +54,7 @@ function CategoryPage({
 }) {
   const isTablet = useMediaQuery(1023)
   const canonical = getCanonicalUrl(`/${category.slug}`)
+  const sections = getArticlePageSections(articles)
 
   const seo = (
     <NextSeo
@@ -91,29 +93,32 @@ function CategoryPage({
       <Layout navigation={navigation}>
         <Hero title={category.title} />
         {isTablet ? (
-          <ArticlesCarousel title={STRINGS.topStories} articles={articles} />
+          <ArticlesCarousel
+            title={STRINGS.topStories}
+            articles={sections.hero}
+          />
         ) : (
-          <ArticlesHero articles={articles} />
+          <ArticlesHero articles={sections.hero} />
         )}
 
-        <ArticlesList articles={articles} title={STRINGS.recent} />
+        <ArticlesList articles={sections.recent} title={STRINGS.recent} />
 
         <div className="lg:py-24 lg:flex lg:gap-28 lg:mx-auto">
           <ArticlesList
-            articles={articles}
+            articles={sections.featured}
             title={STRINGS.featured}
             variant="top"
             className="lg:w-1/2"
           />
           <ArticlesList
-            articles={articles}
+            articles={sections.popular}
             title={STRINGS.popular}
             variant="top"
             className="lg:w-1/2"
           />
         </div>
 
-        <ArticlesList articles={articles} title={STRINGS.moreArticles} />
+        <ArticlesList articles={sections.more} title={STRINGS.moreArticles} />
       </Layout>
     </>
   )

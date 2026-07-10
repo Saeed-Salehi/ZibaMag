@@ -8,6 +8,7 @@ import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
 import { SEO_DESCRIPTION, SITE_NAME, SITE_URL } from '@lib/constants'
 import { STRINGS } from '@lib/strings'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
+import { getArticlePageSections } from '@lib/article-sections'
 
 export async function getStaticProps() {
   const articles: TArticle[] = await fetchAPI('/articles')
@@ -24,6 +25,7 @@ function Home({
   navigation,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const isTablet = useMediaQuery(1023)
+  const sections = getArticlePageSections(articles)
 
   return (
     <Layout navigation={navigation}>
@@ -39,35 +41,29 @@ function Home({
       />
       {isTablet ? (
         //Tablet and smaller devices
-        <ArticlesCarousel
-          title={STRINGS.topStories}
-          articles={articles.slice(0, 4)}
-        />
+        <ArticlesCarousel title={STRINGS.topStories} articles={sections.hero} />
       ) : (
-        <ArticlesHero articles={articles.slice(0, 4)} />
+        <ArticlesHero articles={sections.hero} />
       )}
 
-      <ArticlesList articles={articles.slice(5, 10)} title={STRINGS.recent} />
+      <ArticlesList articles={sections.recent} title={STRINGS.recent} />
 
       <div className="lg:py-24 lg:flex lg:w-full lg:gap-28 lg:mx-auto">
         <ArticlesList
-          articles={articles.slice(0, 5)}
+          articles={sections.featured}
           title={STRINGS.featured}
           variant="top"
           className="lg:w-1/2"
         />
         <ArticlesList
-          articles={articles.slice(6, 11)}
+          articles={sections.popular}
           title={STRINGS.popular}
           variant="top"
           className="lg:w-1/2"
         />
       </div>
 
-      <ArticlesList
-        articles={articles.slice(10, 15)}
-        title={STRINGS.moreArticles}
-      />
+      <ArticlesList articles={sections.more} title={STRINGS.moreArticles} />
     </Layout>
   )
 }
