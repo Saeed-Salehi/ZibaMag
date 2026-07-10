@@ -4,6 +4,7 @@ import Link from 'next/link'
 import s from './ArticleCard.module.css'
 import cn from 'classnames'
 import Image from 'next/image'
+import { STRINGS } from '@lib/strings'
 
 type Props = {
   article: TArticle
@@ -19,7 +20,7 @@ const ArticleCard = ({ article, variant = 'default' }: Props) => {
   return (
     <article className={rootClassName}>
       <Link href={`/articles/${article.slug}`}>
-        <a aria-label={`Link to ${article.title}`} className={s.cover}>
+        <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
           <Image
             src={getMediaURL(
               article.cover.formats.medium?.url || article.cover.url
@@ -33,7 +34,7 @@ const ArticleCard = ({ article, variant = 'default' }: Props) => {
 
       <section className="pt-4">
         <Link href={`/${article.category.slug}`}>
-          <a className="uppercase text-sm font-bold text-accent hover:underline">
+          <a className="text-sm font-bold text-accent hover:underline">
             {article.category.title}
           </a>
         </Link>
@@ -50,9 +51,11 @@ const ArticleCard = ({ article, variant = 'default' }: Props) => {
           </a>
         </Link>
         <div className="text-sm mt-2">
-          By{' '}
+          {STRINGS.by}{' '}
           <Link href={`/contributors/${article.author.slug}`}>
-            <a className="font-bold hover:underline">{article.author.name}</a>
+            <a className="pl-1 pr-2 font-bold hover:underline">
+              {article.author.name}
+            </a>
           </Link>
         </div>
         <Date date={article.published_at as string} />

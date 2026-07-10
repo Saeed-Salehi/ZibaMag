@@ -14,7 +14,7 @@ const ArticlesCarousel = ({ title, articles }: Props) => {
   return (
     <section className="mb-6">
       <div className="flex items-center justify-between h-auto py-4">
-        <p className="uppercase">{title}</p>
+        <p>{title}</p>
       </div>
 
       <div

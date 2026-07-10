@@ -22,11 +22,11 @@ const Head = () => {
     <>
       <DefaultSeo
         titleTemplate={`%s | ${SITE_NAME}`}
-        title="Online Magazine Starter Kit"
+        title={SITE_NAME}
         description={SEO_DESCRIPTION}
         openGraph={{
           type: 'website',
-          locale: 'en_IE',
+          locale: 'fa_IR',
           url: SITE_URL,
           site_name: SITE_NAME,
           images: Object.values(OG_IMAGE).map((image) => {
@@ -45,21 +45,14 @@ const Head = () => {
         {/* Fonts */}
         <link
           rel="preload"
-          href="/fonts/playfair-display/playfair-display-v22-latin-regular.woff2"
+          href="/fonts/vazirmatn/Vazirmatn-Regular.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="/fonts/public-sans/public-sans-v5-latin-regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/public-sans/public-sans-v5-latin-700.woff2"
+          href="/fonts/vazirmatn/Vazirmatn-Bold.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

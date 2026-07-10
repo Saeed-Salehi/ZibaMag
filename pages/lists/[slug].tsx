@@ -8,6 +8,7 @@ import { Article } from '@components/article'
 import { Layout } from '@components/common/Layout'
 import ArrowLeft from '@components/icons/ArrowLeft'
 import { NextSeo } from 'next-seo'
+import { STRINGS } from '@lib/strings'
 
 function ArticlePage() {
   const [article, setArticle] = useState<TArticle | 'loading' | null>('loading')
@@ -30,15 +31,15 @@ function ArticlePage() {
   }
 
   if (article === 'loading') {
-    return <p>Loading</p>
+    return <p>{STRINGS.loading}</p>
   }
 
   return (
     <Layout>
-      <NextSeo noindex nofollow title="Saved article" />
+      <NextSeo noindex nofollow title={STRINGS.savedArticle} />
       <Link href={'/lists'}>
-        <a aria-label="Go back">
-          <ArrowLeft />
+        <a aria-label={STRINGS.goBack}>
+          <ArrowLeft className="icon-mirror" />
         </a>
       </Link>
       <Article article={article as TArticle} />

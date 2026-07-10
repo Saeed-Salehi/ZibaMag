@@ -3,7 +3,7 @@ export const TwitterURL = 'https://twitter.com'
 
 // Global Data
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://zibamag.ir'
-export const SITE_NAME = 'Ziba Mag'
+export const SITE_NAME = 'زیبا مگ'
 export const SITE_LOGO =
   'https://res.cloudinary.com/dliiwavlg/image/upload/v1615590785/magazineog_qppjhg.jpg'
 

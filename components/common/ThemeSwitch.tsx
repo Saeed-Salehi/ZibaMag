@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import ChevronDown from '@components/icons/ChevronDown'
+import { STRINGS } from '@lib/strings'
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false)
@@ -22,11 +23,11 @@ const ThemeSwitch = () => {
           onChange={(e) => setTheme(e.target.value)}
           aria-label="Change theme color"
         >
-          <option value="system">System</option>
-          <option value="dark">Dark Mode</option>
-          <option value="light">Light Mode</option>
+          <option value="system">{STRINGS.themeSystem}</option>
+          <option value="dark">{STRINGS.themeDark}</option>
+          <option value="light">{STRINGS.themeLight}</option>
         </select>
-        <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none theme-select-chevron">
           <ChevronDown width="20" height="20" />
         </span>
       </div>

@@ -12,7 +12,7 @@ function AuthorCard({ author }: { author: TContributor }) {
     <div className="flex py-2 items-center">
       {author.featured && (
         <Link href={`/contributors/${author.slug}`}>
-          <figure className="relative w-12 h-12 mr-5">
+          <figure className="relative w-12 h-12 mr-5 author-avatar">
             <Image
               src={thumbnailUrl}
               className="rounded-full"

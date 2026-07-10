@@ -7,6 +7,7 @@ import { Layout } from '@components/common/Layout'
 import Twitter from '@components/icons/Twitter'
 import { BreadcrumbJsonLd, NextSeo, SocialProfileJsonLd } from 'next-seo'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
+import { STRINGS } from '@lib/strings'
 
 export async function getStaticPaths() {
   const slugs: TContributor[] = await fetchAPI('/contributors')
@@ -68,9 +69,7 @@ function ContributorPage({
 
   const description =
     contributor.featured?.description ||
-    `Articles by ${contributor.name}${
-      contributor.role ? `, ${contributor.role}` : ''
-    }.`
+    STRINGS.articlesBy(contributor.name, contributor.role || undefined)
 
   return (
     <Layout navigation={navigation}>
@@ -109,7 +108,7 @@ function ContributorPage({
         itemListElements={[
           {
             position: 1,
-            name: 'Contributors',
+            name: STRINGS.contributors,
             item: getCanonicalUrl('/contributors'),
           },
           {
@@ -132,7 +131,7 @@ function ContributorPage({
           </figure>
         )}
         <h1 className="serif mt-0 text-2xl">{contributor.name}</h1>
-        <p className="text-sm font-serif uppercase  mb-2">{contributor.role}</p>
+        <p className="text-sm font-serif mb-2">{contributor.role}</p>
         {contributor.urls?.twitter && (
           <ExternalLink
             to={`https://twitter.com/${contributor.urls.twitter}`}
@@ -151,7 +150,10 @@ function ContributorPage({
           </p>
         )}
       </section>
-      <ArticlesList articles={articles || []} title="all contributons" />
+      <ArticlesList
+        articles={articles || []}
+        title={STRINGS.allContributions}
+      />
     </Layout>
   )
 }

@@ -23,11 +23,9 @@ const ContributorFeatured = ({
               layout="fill"
             />
           </figure>
-          <div className="ml-5">
+          <div className="ml-5 contributor-info">
             <h3 className="serif ">{contributor.name}</h3>
-            <p className="text-xs uppercase text-primary-60">
-              {contributor.role}
-            </p>
+            <p className="text-xs text-primary-60">{contributor.role}</p>
           </div>
         </a>
       </Link>

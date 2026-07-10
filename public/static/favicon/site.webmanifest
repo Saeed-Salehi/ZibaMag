@@ -1,7 +1,7 @@
 {
-  "name": "Magazine",
-  "short_name": "Magazine",
-  "description": "Online magazine starter kit",
+  "name": "زیبا مگ",
+  "short_name": "زیبا مگ",
+  "description": "مجله آنلاین فارسی",
   "display": "standalone",
   "start_url": "/",
   "theme_color": "#ffffff",

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { removeContent, storeContent, getAllStoredContent } from '@lib/storage'
 import { ListContext } from '@lib/hooks/use-list'
 import { useToast } from '@lib/hooks/use-toast'
+import { STRINGS } from '@lib/strings'
 
 const ListProvider = ({ children }: { children: React.ReactNode }) => {
   const [list, setList] = useState<TArticle[]>([])
@@ -17,13 +18,13 @@ const ListProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addToList = async (article: TArticle) => {
     setList([...list, article])
-    addToast('Article saved!')
+    addToast(STRINGS.articleSaved)
     await storeContent(article)
   }
 
   const removeFromList = async (article: TArticle) => {
     setList(list.filter((item: TArticle) => item.slug !== article.slug))
-    addToast('Article removed!')
+    addToast(STRINGS.articleRemoved)
     await removeContent(article)
   }
 

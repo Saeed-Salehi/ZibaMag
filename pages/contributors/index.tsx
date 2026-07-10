@@ -7,6 +7,7 @@ import { partition } from '@lib/partition'
 import { InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
+import { STRINGS } from '@lib/strings'
 
 export async function getStaticProps() {
   const contributors: TContributor[] = await fetchAPI('/contributors')
@@ -30,16 +31,16 @@ export function ContributorsPage({
   return (
     <Layout navigation={navigation}>
       <NextSeo
-        title="Contributors"
-        description="Meet the writers and contributors behind our magazine."
+        title={STRINGS.contributors}
+        description={STRINGS.contributorsDescription}
         canonical={getCanonicalUrl('/contributors')}
         openGraph={{
-          title: 'Contributors',
-          description: 'Meet the writers and contributors behind our magazine.',
+          title: STRINGS.contributors,
+          description: STRINGS.contributorsDescription,
           url: getCanonicalUrl('/contributors'),
         }}
       />
-      <Hero title="Contributors" />
+      <Hero title={STRINGS.contributors} />
       <ul className="flex flex-col flex-wrap justify-between md:flex-row md:py-6">
         {featured.map((contributor) => (
           <ContributorFeatured
@@ -48,7 +49,7 @@ export function ContributorsPage({
           />
         ))}
       </ul>
-      <h6 className="font-normal pt-4">more contributors</h6>
+      <h6 className="font-normal pt-4">{STRINGS.moreContributors}</h6>
       <ul>
         {others.map((contributor) => (
           <Contributor contributor={contributor} key={contributor.slug} />

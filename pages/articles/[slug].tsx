@@ -8,6 +8,7 @@ import ArrowLeft from '@components/icons/ArrowLeft'
 import { Button } from '@components/ui/Button'
 import { SITE_LOGO, SITE_NAME } from '@lib/constants'
 import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
+import { STRINGS } from '@lib/strings'
 
 export async function getStaticPaths() {
   const articles: TArticle[] = await fetchAPI('/articles')
@@ -100,8 +101,8 @@ function ArticlePage({
         }
       />
 
-      <Button ariaLabel="Go back" href="/" className="-ml-2">
-        <ArrowLeft />
+      <Button ariaLabel={STRINGS.goBack} href="/" className="-ml-2 back-button">
+        <ArrowLeft className="icon-mirror" />
       </Button>
       <Article article={article} />
       {preview && <ExitPreviewButton />}

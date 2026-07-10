@@ -2,8 +2,8 @@ import Link from 'next/link'
 import SocialUrls from './SocialUrls'
 import ThemeSwitch from '../ThemeSwitch'
 import s from './Footer.module.css'
-import ExternalLink from '@components/ui/Link/ExternalLink'
-import Github from '@components/icons/Github'
+import { STRINGS } from '@lib/strings'
+import { SITE_NAME } from '@lib/constants'
 
 const Footer = ({ categories, pages }: TNavigation) => {
   return (
@@ -13,7 +13,7 @@ const Footer = ({ categories, pages }: TNavigation) => {
         aria-label="Footer Nav"
       >
         <div>
-          <h3 className={s.heading}>Sections</h3>
+          <h3 className={s.heading}>{STRINGS.sections}</h3>
           <ul className={s.ul}>
             {categories.map((category) => (
               <li key={category.slug}>
@@ -26,24 +26,24 @@ const Footer = ({ categories, pages }: TNavigation) => {
         </div>
 
         <div>
-          <h3 className={s.heading}>About</h3>
+          <h3 className={s.heading}>{STRINGS.about}</h3>
           <ul className={s.ul}>
             <li>
               <Link href="/contributors">
-                <a className={s.link}>Contributors</a>
+                <a className={s.link}>{STRINGS.contributors}</a>
               </Link>
             </li>
 
             <li>
               <Link href="/contributors">
-                <a className={s.link}>Contact</a>
+                <a className={s.link}>{STRINGS.contact}</a>
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className={s.heading}>Other</h3>
+          <h3 className={s.heading}>{STRINGS.other}</h3>
           <ul className={s.ul}>
             {pages.map((page) => (
               <li key={page.slug}>
@@ -60,16 +60,9 @@ const Footer = ({ categories, pages }: TNavigation) => {
 
       <ThemeSwitch />
 
-      <ExternalLink
-        to="https://github.com/edgarlr/magazine"
-        ariaLabel="Link to source coude"
-        className="mx-auto flex items-center w-max pt-4 py-2 opacity-80 hover:opacity-100 text-sm"
-      >
-        <span className="mr-2">
-          <Github width="16" height="16" />
-        </span>
-        Source
-      </ExternalLink>
+      <p className="text-center text-sm text-primary-60 pt-2 pb-1">
+        © {SITE_NAME} — {STRINGS.footerRights}
+      </p>
     </footer>
   )
 }

@@ -4,6 +4,7 @@ import Share from '@components/icons/Share'
 import Twitter from '@components/icons/Twitter'
 import { Menu, MenuButton, MenuWrapper, MenuItem } from '@components/ui/Menu'
 import { SITE_URL, SOCIAL_USERNAMES } from '@lib/constants'
+import { STRINGS } from '@lib/strings'
 import { useToast } from '@lib/hooks/use-toast'
 import { MouseEvent } from 'react'
 
@@ -13,7 +14,11 @@ type Props = {
   message?: string
 }
 
-const ShareButton = ({ title, path, message = 'Chech this link' }: Props) => {
+const ShareButton = ({
+  title,
+  path,
+  message = STRINGS.checkThisLink,
+}: Props) => {
   const { addToast } = useToast()
 
   const fullURL = `${SITE_URL}${path}`
@@ -36,7 +41,7 @@ const ShareButton = ({ title, path, message = 'Chech this link' }: Props) => {
     if (navigator.clipboard) {
       navigator.clipboard
         .writeText(fullURL)
-        .then(() => addToast('Copied to the clipboard!'))
+        .then(() => addToast(STRINGS.copiedToClipboard))
         .catch(console.error)
     }
   }
@@ -51,15 +56,15 @@ const ShareButton = ({ title, path, message = 'Chech this link' }: Props) => {
 
   return (
     <MenuWrapper>
-      <MenuButton ariaLabel="Share" onClick={onShareClick}>
+      <MenuButton ariaLabel={STRINGS.share} onClick={onShareClick}>
         <Share />
       </MenuButton>
-      <Menu title="Share">
+      <Menu title={STRINGS.share}>
         <MenuItem
           subfix={<Facebook width={20} height={20} />}
           onClick={onFacebookShare}
         >
-          Share on Facebook
+          {STRINGS.shareOnFacebook}
         </MenuItem>
         <MenuItem
           subfix={<Twitter width={20} height={20} />}
@@ -68,17 +73,16 @@ const ShareButton = ({ title, path, message = 'Chech this link' }: Props) => {
           }`}
           external
         >
-          Share on Twitter
+          {STRINGS.shareOnTwitter}
         </MenuItem>
         <MenuItem unstyled>
           <button
-            className="w-11/12 my-0 mx-auto border rounded-xl overflow-hidden whitespace-nowrap overflow-ellipsis relative text-sm py-4 pl-2 pr-9 opacity-70 transition-opacity hover:opacity-100 md:py-2"
+            className="w-11/12 my-0 mx-auto border rounded-xl overflow-hidden whitespace-nowrap overflow-ellipsis relative text-sm py-4 pl-2 pr-9 opacity-70 transition-opacity hover:opacity-100 md:py-2 share-copy-btn"
             onClick={onCopyToClipboard}
-            aria-label="Copy to clipboard"
-            title={fullURL}
+            aria-label={STRINGS.copyToClipboard}
           >
             {fullURL}
-            <span className="text-primary absolute right-3 leading-none">
+            <span className="text-primary absolute right-3 leading-none share-copy-icon">
               <Copy width={16} height={16} />
             </span>
           </button>

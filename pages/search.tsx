@@ -6,6 +6,7 @@ import { NextSeo } from 'next-seo'
 import { Layout } from '@components/common/Layout'
 import SearchInput from '@components/search/SearchInput'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
+import { STRINGS } from '@lib/strings'
 
 export async function getStaticProps() {
   const categories: TCategory[] = await fetchAPI('/categories')
@@ -48,8 +49,8 @@ function SearchPage({
   return (
     <Layout navigation={navigation}>
       <NextSeo
-        title="Search"
-        description="Search articles across the magazine."
+        title={STRINGS.search}
+        description={STRINGS.searchDescription}
         canonical={getCanonicalUrl('/search')}
         noindex
         nofollow
@@ -60,15 +61,11 @@ function SearchPage({
         {sortedArticles.length !== 0 ? (
           <ArticlesList
             articles={sortedArticles}
-            title={`${sortedArticles.length} ${
-              sortedArticles.length > 1 ? 'results' : 'result'
-            }`}
+            title={STRINGS.searchResultCount(sortedArticles.length)}
           />
         ) : (
           <p className="text-center my-auto text-secondary">
-            {stringQuery
-              ? "We couldn't find anything"
-              : 'Enter a search term to find articles'}
+            {stringQuery ? STRINGS.searchNoResults : STRINGS.searchPrompt}
           </p>
         )}
       </main>

@@ -69,7 +69,7 @@ const MenuItem = ({
     >
       {Component}
 
-      {subfix && <span className={s.subfix}>{subfix}</span>}
+      {subfix && <span className={cn(s.subfix, 'menu-subfix')}>{subfix}</span>}
     </li>
   )
 }

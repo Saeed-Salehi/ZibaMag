@@ -2,6 +2,7 @@ import Close from '@components/icons/Close'
 import { useEffect } from 'react'
 import { Button } from '../Button'
 import { useToast } from '@lib/hooks/use-toast'
+import { STRINGS } from '@lib/strings'
 
 type Props = {
   children: React.ReactNode
@@ -26,7 +27,7 @@ const Toast = ({ children, id }: Props) => {
       <Button
         className=" text-primary"
         onClick={() => removeToast(id)}
-        ariaLabel="Close"
+        ariaLabel={STRINGS.close}
       >
         <Close />
       </Button>

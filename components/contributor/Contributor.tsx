@@ -6,9 +6,7 @@ const Contributor = ({ contributor }: { contributor: TContributor }) => {
       <Link href={`/contributors/${contributor.slug}`}>
         <a>
           <h4 className="serif">{contributor.name}</h4>
-          <p className="text-xs capitalize text-primary-60">
-            {contributor.role}
-          </p>
+          <p className="text-xs text-primary-60">{contributor.role}</p>
         </a>
       </Link>
     </li>

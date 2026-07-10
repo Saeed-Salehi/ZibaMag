@@ -1,9 +1,10 @@
 import AddToListButton from './AddToListButton'
 import ShareButton from '@components/common/ShareButton'
+import { STRINGS } from '@lib/strings'
 
 const ActionButtons = ({ article }: { article: TArticle }) => {
   return (
-    <ul className="flex justify-end">
+    <ul className="flex justify-end mr-auto">
       <li>
         <AddToListButton article={article} />
       </li>
@@ -11,7 +12,7 @@ const ActionButtons = ({ article }: { article: TArticle }) => {
         <ShareButton
           path={`/articles/${article.slug}`}
           title={article.title}
-          message={'Check this article'}
+          message={STRINGS.checkThisArticle}
         />
       </li>
     </ul>

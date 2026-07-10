@@ -15,12 +15,17 @@ const ScrollIndicator = ({ count, carouselRef }: Props) => {
     if (!element) return
 
     const scrollListener = () => {
-      const windowScroll = element.scrollLeft
       const totalWidth = element.scrollWidth - element.clientWidth
 
-      if (windowScroll === 0) setScrollProgress(0)
-      if (windowScroll > totalWidth) setScrollProgress(100)
-      return setScrollProgress((windowScroll / totalWidth) * 100)
+      if (totalWidth <= 0) {
+        setScrollProgress(0)
+        return
+      }
+
+      const scrollLeft = Math.abs(element.scrollLeft)
+      const progress = (scrollLeft / totalWidth) * 100
+
+      setScrollProgress(Math.min(100, progress))
     }
 
     element.addEventListener('scroll', scrollListener)

@@ -7,6 +7,7 @@ import Filters from '@components/icons/Filters'
 import Link from 'next/link'
 import { filterQueries } from '@lib/search'
 import { Button } from '@components/ui/Button'
+import { STRINGS } from '@lib/strings'
 import {
   disableBodyScroll,
   enableBodyScroll,
@@ -54,7 +55,7 @@ const SearchInput = ({ categories }: { categories: TCategory[] }) => {
   const SearchFilters = () => {
     return (
       <div className="absolute z-20 bg-secondary left-0 right-0 px-2 pt-2 pb-6 border-b">
-        <p className={s.filterHeading}>SORT BY</p>
+        <p className={s.filterHeading}>{STRINGS.sortBy}</p>
         <ul>
           <Link
             href={{
@@ -67,7 +68,7 @@ const SearchInput = ({ categories }: { categories: TCategory[] }) => {
                 [s.filterActive]: !sort || sort === 'asc',
               })}
             >
-              Newest
+              {STRINGS.newest}
             </li>
           </Link>
           <Link
@@ -81,11 +82,11 @@ const SearchInput = ({ categories }: { categories: TCategory[] }) => {
                 [s.filterActive]: sort === 'desc',
               })}
             >
-              Oldest
+              {STRINGS.oldest}
             </li>
           </Link>
         </ul>
-        <p className={s.filterHeading}>FILTER BY</p>
+        <p className={s.filterHeading}>{STRINGS.filterBy}</p>
         <ul>
           <Link
             href={{
@@ -98,7 +99,7 @@ const SearchInput = ({ categories }: { categories: TCategory[] }) => {
                 [s.filterActive]: !category,
               })}
             >
-              All Categories
+              {STRINGS.allCategories}
             </li>
           </Link>
           {categories.map((c) => (
@@ -135,8 +136,8 @@ const SearchInput = ({ categories }: { categories: TCategory[] }) => {
           name="search"
           id="search"
           defaultValue={router.query.q}
-          placeholder="Buscar..."
-          className="bg-transparent outline-none w-full pr-2 pl-4 search-btn-none"
+          placeholder={STRINGS.searchPlaceholder}
+          className="bg-transparent outline-none w-full pr-2 pl-4 search-btn-none search-input"
           onKeyUp={(e) => {
             e.preventDefault()
             if (e.key === 'Enter') {

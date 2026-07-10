@@ -13,13 +13,20 @@ const MenuWrapper = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!isVisible) return
 
-    const onOutsideClick = (e: any) => {
+    const onOutsideClick = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node
+      const menuPortal = document.getElementById('menu')
+      const drawerPortal = document.getElementById('drawer')
+
       if (
-        menuWrapperRef.current &&
-        !menuWrapperRef.current.contains(e.target)
+        menuWrapperRef.current?.contains(target) ||
+        menuPortal?.contains(target) ||
+        drawerPortal?.contains(target)
       ) {
-        toggle()
+        return
       }
+
+      toggle()
     }
 
     document.addEventListener('click', onOutsideClick)

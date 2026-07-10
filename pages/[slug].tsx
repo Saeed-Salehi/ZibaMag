@@ -7,6 +7,7 @@ import { Layout } from '@components/common/Layout'
 import { useMediaQuery } from '@lib/hooks/use-media-queries'
 import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
+import { STRINGS } from '@lib/strings'
 
 export async function getStaticPaths() {
   const categories: TCategory[] = await fetchAPI('/categories')
@@ -81,7 +82,7 @@ function CategoryPage({
         <Layout navigation={navigation}>
           <Hero title={category.title} />
           <div className="text-center my-auto">
-            <p>There are no articles to show yet.</p>
+            <p>{STRINGS.noArticles}</p>
           </div>
         </Layout>
       </>
@@ -95,29 +96,29 @@ function CategoryPage({
       <Layout navigation={navigation}>
         <Hero title={category.title} />
         {isTablet ? (
-          <ArticlesCarousel title="Top stories" articles={articles} />
+          <ArticlesCarousel title={STRINGS.topStories} articles={articles} />
         ) : (
           <ArticlesHero articles={articles} />
         )}
 
-        <ArticlesList articles={articles} title="Recent" />
+        <ArticlesList articles={articles} title={STRINGS.recent} />
 
         <div className="lg:py-24 lg:flex lg:gap-28 lg:mx-auto">
           <ArticlesList
             articles={articles}
-            title="Featured"
+            title={STRINGS.featured}
             variant="top"
             className="lg:w-1/2"
           />
           <ArticlesList
             articles={articles}
-            title="Popular"
+            title={STRINGS.popular}
             variant="top"
             className="lg:w-1/2"
           />
         </div>
 
-        <ArticlesList articles={articles} title="More articles" />
+        <ArticlesList articles={articles} title={STRINGS.moreArticles} />
       </Layout>
     </>
   )

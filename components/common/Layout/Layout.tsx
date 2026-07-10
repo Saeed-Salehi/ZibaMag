@@ -5,6 +5,7 @@ import { Footer } from '../Footer'
 import { Header } from '../Header'
 import { Nav } from '../Nav'
 import cn from 'classnames'
+import { STRINGS } from '@lib/strings'
 
 type Props = {
   children: React.ReactNode
@@ -18,7 +19,7 @@ const Layout = ({ children, navigation, isMarkdown = false }: Props) => {
 
   useEffect(() => {
     if (isOffline) {
-      addToast('No Internet Connection')
+      addToast(STRINGS.noInternet)
     }
   }, [addToast, isOffline])
 

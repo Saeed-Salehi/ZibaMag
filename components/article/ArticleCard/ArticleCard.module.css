@@ -42,7 +42,7 @@
     @apply relative pb-3/5 w-full;
   }
   & ul {
-    @apply absolute -bottom-2 -right-2 flex;
+    @apply flex;
   }
 }
 

@@ -1,14 +1,12 @@
 import { Layout } from '@components/common/Layout'
+import { STRINGS } from '@lib/strings'
 
 const offline = () => {
   return (
     <Layout>
       <div className="text-center my-auto">
-        <h4 className="my-1">You are offline</h4>
-        <p>
-          This page can&apos;t be displayed because you are not connected to the
-          internet
-        </p>
+        <h4 className="my-1">{STRINGS.offline}</h4>
+        <p>{STRINGS.offlineDescription}</p>
       </div>
     </Layout>
   )

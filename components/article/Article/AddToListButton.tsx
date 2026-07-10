@@ -1,6 +1,7 @@
 import Bookmark from '@components/icons/Bookmark'
 import { Button } from '@components/ui/Button'
 import { useList } from '@lib/hooks/use-list'
+import { STRINGS } from '@lib/strings'
 
 type Props = {
   article: TArticle
@@ -19,7 +20,7 @@ const AddToListButton = ({ article }: Props) => {
   }
 
   return (
-    <Button onClick={onButtonClick} ariaLabel="Add to list">
+    <Button onClick={onButtonClick} ariaLabel={STRINGS.addToList}>
       <Bookmark style={isOnList ? { fill: 'currentColor' } : {}} />
     </Button>
   )

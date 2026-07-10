@@ -2,6 +2,7 @@ import { Date } from '@components/ui/Date'
 import Link from 'next/link'
 import s from './ArticleCard.module.css'
 import cn from 'classnames'
+import { STRINGS } from '@lib/strings'
 
 type Props = {
   article: TArticle
@@ -28,9 +29,9 @@ const ArticleCardTop = ({ article, index }: Props) => {
 
         <div className="text-sm flex flex-wrap">
           <p>
-            By
+            {STRINGS.by}
             <Link href={`/contributors/${article.author.slug}`}>
-              <a className="pl-1 font-bold hover:underline">
+              <a className="pl-1 pr-2 font-bold hover:underline">
                 {article.author.name}
               </a>
             </Link>

@@ -1,0 +1,124 @@
+[dir='rtl'] .markdown blockquote {
+  border-left-width: 0;
+  border-right-width: 4px;
+  padding-left: 1rem;
+  padding-right: 1.5rem;
+}
+
+[dir='rtl'] .contributor-info {
+  margin-left: 0;
+  margin-right: 1.25rem;
+}
+
+[dir='rtl'] .author-avatar {
+  margin-right: 0;
+  margin-left: 1.25rem;
+}
+
+[dir='rtl'] .select-primary {
+  padding-left: 2.5rem;
+  padding-right: 1rem;
+}
+
+[dir='rtl'] .search-input {
+  padding-right: 2.25rem;
+  padding-left: 0.5rem;
+}
+
+[dir='rtl'] .search-input-icon {
+  right: 0;
+  left: auto;
+}
+
+[dir='rtl'] .theme-select-chevron {
+  right: auto;
+  left: 0.5rem;
+}
+
+[dir='rtl'] .toast-container {
+  right: auto;
+  left: 0;
+}
+
+@media (min-width: 768px) {
+  [dir='rtl'] .toast-container {
+    right: auto;
+    left: 1rem;
+  }
+}
+
+[dir='rtl'] .back-button {
+  margin-left: 0;
+  margin-right: -0.5rem;
+}
+
+[dir='rtl'] .icon-mirror {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .default {
+  flex-direction: row;
+}
+
+[dir='rtl'] .lists,
+[dir='rtl'] .carousel {
+  flex-direction: row;
+  margin-right: 0;
+  margin-left: 2.5rem;
+}
+
+[dir='rtl'] .lists section,
+[dir='rtl'] .carousel section {
+  margin-right: 0;
+  margin-left: 2rem;
+}
+
+[dir='rtl'] .default ul,
+[dir='rtl'] .hero ul,
+[dir='rtl'] .lists ul,
+[dir='rtl'] .carousel ul {
+  right: auto;
+  left: 0;
+}
+
+[dir='rtl'] .hero ul {
+  left: -0.5rem;
+  right: auto;
+}
+
+[dir='rtl'] .lists ul,
+[dir='rtl'] .carousel ul {
+  transform: translateX(-0.25rem) translateY(0.25rem);
+}
+
+[dir='rtl'] .search-container {
+  left: 0;
+  right: auto;
+}
+
+@media (min-width: 768px) {
+  [dir='rtl'] .search-container {
+    left: 0;
+    right: auto;
+  }
+}
+
+[dir='rtl'] .menu-subfix {
+  right: auto;
+  left: 1.5rem;
+}
+
+[dir='rtl'] .share-copy-icon {
+  right: auto;
+  left: 0.75rem;
+}
+
+[dir='rtl'] .share-copy-btn {
+  padding-right: 0.5rem;
+  padding-left: 2.25rem;
+}
+
+[dir='rtl'] .menu-mobile-title {
+  margin-right: 0;
+  margin-left: 1.5rem;
+}

@@ -9,7 +9,7 @@ const ToastContainer = ({ toasts }: { toasts: TToast[] }) => {
 
   if (!mounted) return null
   return createPortal(
-    <div className="fixed right-0 bottom-8 w-screen md:bottom-4 md:w-96 md:right-4">
+    <div className="fixed right-0 bottom-8 w-screen md:bottom-4 md:w-96 md:right-4 toast-container">
       {toasts.map((item: TToast) => (
         <Toast key={item.id} id={item.id}>
           {item.content}

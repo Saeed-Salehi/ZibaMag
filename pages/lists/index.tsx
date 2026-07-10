@@ -3,32 +3,29 @@ import { Layout } from '@components/common/Layout'
 import Bookmark from '@components/icons/Bookmark'
 import { useList } from '@lib/hooks/use-list'
 import { NextSeo } from 'next-seo'
+import { STRINGS } from '@lib/strings'
 
 const ListsPage = () => {
   const { list } = useList()
 
   return (
     <Layout>
-      <NextSeo noindex nofollow title="Saved articles" />
+      <NextSeo noindex nofollow title={STRINGS.savedArticles} />
       {list && list.length !== 0 ? (
         <ArticlesList
           articles={list}
-          title={
-            list.length === 1
-              ? `${list.length} Article`
-              : `${list.length} Articles`
-          }
+          title={STRINGS.articleCount(list.length)}
           variant="lists"
         />
       ) : (
         <div className="text-center my-auto">
-          <p>You haven&apos;t saved anything yet.</p>
+          <p>{STRINGS.noSavedArticles}</p>
           <p>
-            Tap the{' '}
+            {STRINGS.saveArticlesHint}{' '}
             <span>
               <Bookmark className="inline-block" />
             </span>{' '}
-            icon to save them for later.
+            {STRINGS.saveArticlesHintEnd}
           </p>
         </div>
       )}

@@ -5,15 +5,16 @@ import { Date } from '@components/ui/Date'
 import ActionButtons from './ActionButtons'
 import { getMediaURL } from '@lib/api'
 import Image from 'next/image'
+import { STRINGS } from '@lib/strings'
 
 function Article({ article }: { article: TArticle | undefined }) {
-  if (!article) return <p>Something went wrong</p>
+  if (!article) return <p>{STRINGS.somethingWentWrong}</p>
 
   return (
     <article>
       <header className="py-10">
         <Link href={`/${article.category.slug}`}>
-          <a className="uppercase text-sm font-bold text-accent">
+          <a className="text-sm font-bold text-accent">
             {article.category.title}
           </a>
         </Link>
@@ -21,9 +22,11 @@ function Article({ article }: { article: TArticle | undefined }) {
         <h1 className="serif pb-4">{article.title}</h1>
 
         <p className="mb-2">
-          By{' '}
+          {STRINGS.by}{' '}
           <Link href={`/contributors/${article.author.slug}`}>
-            <a className="font-bold">{article.author.name}</a>
+            <a className="pl-1 pr-2 font-bold hover:underline">
+              {article.author.name}
+            </a>
           </Link>
         </p>
 

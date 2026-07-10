@@ -33,7 +33,7 @@ const ArticlesList = ({
 
   return (
     <section className={className}>
-      <div className="mt-10 text-center py-4 font-serif text-xl border-b border-primary-50 uppercase">
+      <div className="mt-10 text-center py-4 font-serif text-xl border-b border-primary-50">
         {title}
       </div>
       {renderCards()}

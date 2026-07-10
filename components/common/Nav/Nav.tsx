@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import cn from 'classnames'
 import { useHideOnScroll } from '@lib/hooks/use-hide-on-scroll'
+import { STRINGS } from '@lib/strings'
 
 const Nav = ({ categories }: { categories: TCategory[] }) => {
   const router = useRouter()
@@ -18,18 +19,18 @@ const Nav = ({ categories }: { categories: TCategory[] }) => {
       <Link href={`/`}>
         <a
           className={cn(
-            'uppercase px-6 py-2 text-xs font-bold text-primary-90',
+            'px-6 py-2 text-xs font-bold text-primary-90',
             router.pathname === '/' && 'border-b-2 border-primary'
           )}
         >
-          HOME
+          {STRINGS.home}
         </a>
       </Link>
       {categories.map((category) => (
         <Link href={`/${category.slug}`} key={category.slug}>
           <a
             className={cn(
-              'uppercase py-2 px-4 text-xs font-bold text-primary-90',
+              'py-2 px-4 text-xs font-bold text-primary-90',
               router.query.slug === category.slug && 'border-b-2 border-primary'
             )}
           >
