@@ -3,9 +3,16 @@ const path = require('path')
 
 const withOffline = require('next-offline')
 
+const sharedEnv = {
+  env: {
+    API_URL: process.env.API_URL,
+  },
+}
+
 module.exports = (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     return {
+      ...sharedEnv,
       /* Localhost on development for next/image component */
       images: {
         domains: ['localhost', 'res.cloudinary.com', '79.141.168.50'],
@@ -14,6 +21,7 @@ module.exports = (phase) => {
   }
 
   return withOffline({
+    ...sharedEnv,
     generateInDevMode: false,
     dontAutoRegisterSw: true,
     generateSw: false,

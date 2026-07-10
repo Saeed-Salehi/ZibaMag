@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import SocialUrls from './SocialUrls'
 import ThemeSwitch from '../ThemeSwitch'
 import s from './Footer.module.css'
 import { STRINGS } from '@lib/strings'
@@ -56,7 +55,7 @@ const Footer = ({ categories, pages }: TNavigation) => {
         </div>
       </nav>
 
-      <SocialUrls />
+      {/* <SocialUrls /> */}
 
       <ThemeSwitch />
 

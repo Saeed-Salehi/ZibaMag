@@ -1,6 +1,6 @@
 import ReactMarkdown from 'react-markdown'
 import Image from 'next/image'
-import { getMediaURL } from '@lib/api'
+import { getMediaURL, isStrapiMediaUrl } from '@lib/api'
 
 const ParagraphRenderer = (props: any) => {
   const element = props.children[0]
@@ -17,7 +17,7 @@ const ImageRenderer = ({ src, alt }: { src: string; alt: string }) => {
 
   return (
     <figure className="relative w-full h-full mt-6">
-      {src.startsWith(process.env.API_URL || 'http://localhost:1337') ? (
+      {isStrapiMediaUrl(src) ? (
         // Optimize with next/image if the image come from our provider
         <Image src={srcUrl} alt={alt} layout="fill" objectFit="contain" />
       ) : (

@@ -1,5 +1,25 @@
+const DEFAULT_API_URL = 'http://localhost:1337'
+
+export function getApiBaseUrl() {
+  return process.env.API_URL || DEFAULT_API_URL
+}
+
 export function getStrapiURL(path: string) {
-  return `${process.env.API_URL || 'http://localhost:1337'}${path}`
+  return `${getApiBaseUrl()}${path}`
+}
+
+export function isStrapiMediaUrl(url: string) {
+  if (url.startsWith('/uploads/')) return true
+
+  if (url.startsWith('http')) {
+    try {
+      return new URL(url).pathname.startsWith('/uploads/')
+    } catch {
+      return false
+    }
+  }
+
+  return false
 }
 
 // Helper to make GET requests to Strapi
@@ -23,8 +43,17 @@ export async function fetchAPI(path: string) {
 
 export const getMediaURL = (url?: string) => {
   if (!url) return ' '
-  // Return the full url when it's external
-  if (url.startsWith('http') || url.startsWith('//')) return url
+
+  if (url.startsWith('//')) return url
+
+  // Strapi often stores absolute localhost URLs in the CMS; always rewrite uploads.
+  if (isStrapiMediaUrl(url)) {
+    const path = url.startsWith('http') ? new URL(url).pathname : url
+    return getStrapiURL(path)
+  }
+
+  if (url.startsWith('http')) return url
+
   return getStrapiURL(url)
 }
 
