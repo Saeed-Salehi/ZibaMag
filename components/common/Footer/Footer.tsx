@@ -25,25 +25,18 @@ const Footer = ({ categories, pages }: TNavigation) => {
         </div>
 
         <div>
-          <h3 className={s.heading}>{STRINGS.about}</h3>
+          <h3 className={s.heading}>{STRINGS.more}</h3>
           <ul className={s.ul}>
             <li>
               <Link href="/contributors">
                 <a className={s.link}>{STRINGS.contributors}</a>
               </Link>
             </li>
-
             <li>
               <Link href="/contact-us">
                 <a className={s.link}>{STRINGS.contact}</a>
               </Link>
             </li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className={s.heading}>{STRINGS.other}</h3>
-          <ul className={s.ul}>
             {pages.map((page) => (
               <li key={page.slug}>
                 <Link href={`/pages/${page.slug}`}>
@@ -51,6 +44,32 @@ const Footer = ({ categories, pages }: TNavigation) => {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className={s.heading}>{STRINGS.featuredLinks}</h3>
+          <ul className={s.ul}>
+            <li>
+              <a
+                href="https://doctor-laser.ir"
+                className={s.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {STRINGS.clinicManagementSystem}
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://pchas.ir"
+                className={s.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {STRINGS.developerTeam}
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
