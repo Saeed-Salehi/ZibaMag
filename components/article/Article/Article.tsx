@@ -35,12 +35,13 @@ function Article({ article }: { article: TArticle | undefined }) {
         <ActionButtons article={article} />
 
         {coverUrl && article.cover && (
-          <div className="my-8">
+          <div className="my-8 article-image">
             <Image
               src={coverUrl}
               alt={article.cover.alternativeText || ''}
               width={article.cover.width}
               height={article.cover.height}
+              className="article-image"
             />
           </div>
         )}

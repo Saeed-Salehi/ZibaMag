@@ -19,7 +19,7 @@ const Nav = ({ categories }: { categories: TCategory[] }) => {
       <Link href={`/`}>
         <a
           className={cn(
-            'px-6 py-2 text-xs font-bold text-primary-90',
+            'px-6 py-2 text-xs font-semibold text-primary-90',
             router.pathname === '/' && 'border-b-2 border-primary'
           )}
         >
@@ -30,7 +30,7 @@ const Nav = ({ categories }: { categories: TCategory[] }) => {
         <Link href={`/${category.slug}`} key={category.slug}>
           <a
             className={cn(
-              'py-2 px-4 text-xs font-bold text-primary-90',
+              'py-2 px-4 text-xs font-semibold text-primary-90',
               router.query.slug === category.slug && 'border-b-2 border-primary'
             )}
           >

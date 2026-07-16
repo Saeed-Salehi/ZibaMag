@@ -1,37 +1,41 @@
+import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import Image from 'next/image'
-import { getMediaURL, isStrapiMediaUrl } from '@lib/api'
-
-const ParagraphRenderer = (props: any) => {
-  const element = props.children[0]
-  // escape all the image elements
-  return element.type.name === 'ImageRenderer' ? (
-    { ...element }
-  ) : (
-    <p {...props} />
-  )
-}
+import { getMediaURL } from '@lib/api'
 
 const ImageRenderer = ({ src, alt }: { src: string; alt: string }) => {
   const srcUrl = getMediaURL(src)
 
   return (
-    <figure className="relative w-full h-full mt-6">
-      {isStrapiMediaUrl(src) ? (
-        // Optimize with next/image if the image come from our provider
-        <Image src={srcUrl} alt={alt} layout="fill" objectFit="contain" />
-      ) : (
-        // Regular img tag whenever the image came from a different domain or source
-        <img src={srcUrl} alt={alt} style={{ objectFit: 'contain' }} />
-      )}
-      <figcaption
-        className="text-sm mt-4 text-primary-60"
-        style={{ textAlign: 'center' }}
-      >
-        {alt}
-      </figcaption>
+    <figure className="mt-6">
+      {/* Native img: markdown has no dimensions; next/image layout="fill" collapses without a sized parent. */}
+      <img
+        src={srcUrl}
+        alt={alt || ''}
+        className="article-image"
+        style={{ borderRadius: 15 }}
+      />
+      {alt ? (
+        <figcaption
+          className="text-sm mt-4 text-primary-60"
+          style={{ textAlign: 'center' }}
+        >
+          {alt}
+        </figcaption>
+      ) : null}
     </figure>
   )
+}
+
+const ParagraphRenderer = ({ children }: { children?: React.ReactNode }) => {
+  const childArray = React.Children.toArray(children)
+  const onlyChild = childArray.length === 1 ? childArray[0] : null
+
+  // Unwrap sole image so <figure> is not nested inside <p>
+  if (React.isValidElement(onlyChild) && onlyChild.type === ImageRenderer) {
+    return onlyChild
+  }
+
+  return <p>{children}</p>
 }
 
 const Markdown = ({ content }: { content?: string }) => {

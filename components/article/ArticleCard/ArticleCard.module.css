@@ -1,3 +1,8 @@
+.cover {
+  border-radius: 15px;
+  overflow: hidden;
+}
+
 .default {
   @apply cursor-pointer py-6 border-b relative;
   & .cover {

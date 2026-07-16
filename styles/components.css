@@ -19,6 +19,11 @@
     @apply border py-1 pl-4 pr-10 rounded-lg focus:outline-none focus:border-primary cursor-pointer;
   }
 
+  .article-image {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
   .markdown {
     @apply text-lg max-w-full leading-article;
     & > * {
@@ -30,7 +35,8 @@
     }
 
     & img {
-      @apply max-w-full w-auto mx-auto block rounded;
+      @apply max-w-full w-auto mx-auto block;
+      border-radius: 15px;
     }
 
     & h2,
