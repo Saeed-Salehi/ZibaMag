@@ -104,5 +104,26 @@
     & ol li {
       @apply p-2 leading-6;
     }
+
+    & .markdown-table-wrap {
+      @apply my-6 w-full overflow-x-auto;
+    }
+
+    & table {
+      @apply w-full border-collapse text-base;
+    }
+
+    & thead {
+      @apply bg-primary-05;
+    }
+
+    & th,
+    & td {
+      @apply border border-primary-20 px-3 py-2 text-right align-top;
+    }
+
+    & th {
+      @apply font-bold;
+    }
   }
 }

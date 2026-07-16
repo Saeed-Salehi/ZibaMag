@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
 import { getMediaURL } from '@lib/api'
 
 const ImageRenderer = ({ src, alt }: { src: string; alt: string }) => {
@@ -38,11 +39,22 @@ const ParagraphRenderer = ({ children }: { children?: React.ReactNode }) => {
   return <p>{children}</p>
 }
 
+const TableRenderer = ({ children }: { children?: React.ReactNode }) => (
+  <div className="markdown-table-wrap">
+    <table>{children}</table>
+  </div>
+)
+
 const Markdown = ({ content }: { content?: string }) => {
   return (
     <section className="markdown">
       <ReactMarkdown
-        renderers={{ image: ImageRenderer, paragraph: ParagraphRenderer }}
+        plugins={[gfm]}
+        renderers={{
+          image: ImageRenderer,
+          paragraph: ParagraphRenderer,
+          table: TableRenderer,
+        }}
       >
         {content || ''}
       </ReactMarkdown>
