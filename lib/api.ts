@@ -41,6 +41,34 @@ export async function fetchAPI(path: string) {
   return data
 }
 
+export type TContactMessagePayload = {
+  fullName: string
+  mobile: string
+  message: string
+}
+
+// Helper to submit the contact form to Strapi
+export async function createContactMessage(payload: TContactMessagePayload) {
+  const requestUrl = getStrapiURL('/contact-messages')
+  const response = await fetch(requestUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await response.json().catch(() => null)
+
+  if (!response.ok || data?.statusCode >= 400) {
+    throw new Error(
+      data?.message || `Failed to submit contact message (${response.status})`
+    )
+  }
+
+  return data
+}
+
 export const getMediaURL = (url?: string) => {
   if (!url) return ' '
 

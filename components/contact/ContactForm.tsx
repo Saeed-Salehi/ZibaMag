@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
+import { createContactMessage } from '@lib/api'
 import { useToast } from '@lib/hooks/use-toast'
 import { STRINGS } from '@lib/strings'
 
@@ -17,6 +18,7 @@ const INITIAL_VALUES: ContactFormValues = {
 const ContactForm = () => {
   const { addToast } = useToast()
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -25,12 +27,25 @@ const ContactForm = () => {
     setValues((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isSubmitting) return
 
-    // API submission will be wired in a later step
-    addToast(STRINGS.contactSuccess)
-    setValues(INITIAL_VALUES)
+    setIsSubmitting(true)
+
+    try {
+      await createContactMessage({
+        fullName: values.fullName.trim(),
+        mobile: values.mobile.trim(),
+        message: values.message.trim(),
+      })
+      addToast(STRINGS.contactSuccess)
+      setValues(INITIAL_VALUES)
+    } catch {
+      addToast(STRINGS.contactError)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -52,6 +67,7 @@ const ContactForm = () => {
           onChange={handleChange}
           className="input-primary"
           placeholder={STRINGS.fullName}
+          disabled={isSubmitting}
         />
       </div>
 
@@ -71,6 +87,7 @@ const ContactForm = () => {
           onChange={handleChange}
           className="input-primary text-left"
           placeholder="09xxxxxxxxx"
+          disabled={isSubmitting}
         />
       </div>
 
@@ -87,11 +104,16 @@ const ContactForm = () => {
           onChange={handleChange}
           className="input-primary resize-y"
           placeholder={STRINGS.message}
+          disabled={isSubmitting}
         />
       </div>
 
-      <button type="submit" className="btn-primary mt-2">
-        {STRINGS.sendMessage}
+      <button
+        type="submit"
+        className="btn-primary mt-2"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? STRINGS.loading : STRINGS.sendMessage}
       </button>
     </form>
   )

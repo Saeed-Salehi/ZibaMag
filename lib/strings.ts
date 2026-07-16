@@ -56,6 +56,7 @@ export const STRINGS = {
   message: 'متن پیام',
   sendMessage: 'ارسال پیام',
   contactSuccess: 'پیامتون رو میخونیم و باهاتون تماس میگیریم',
+  contactError: 'ارسال پیام با مشکل مواجه شد. دوباره تلاش کنید.',
   other: 'سایر',
   footerRights: 'تمامی حقوق محفوظ است.',
   goBack: 'بازگشت',
