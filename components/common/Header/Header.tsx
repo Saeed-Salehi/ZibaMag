@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import cn from 'classnames'
 import s from './Header.module.css'
 import { useRouter } from 'next/router'
@@ -15,6 +14,7 @@ import {
 } from 'body-scroll-lock'
 import { SITE_NAME } from '@lib/constants'
 import { STRINGS } from '@lib/strings'
+import Image from 'next/image'
 
 const Header = () => {
   const router = useRouter()
@@ -36,6 +36,16 @@ const Header = () => {
     }
   }, [showSearch, isMobile])
 
+  const handleLogoClick = () => {
+    router.push('/')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      handleLogoClick()
+    }
+  }
+
   return (
     <header
       ref={searchRef}
@@ -44,9 +54,21 @@ const Header = () => {
       <Button href="/lists" ariaLabel={STRINGS.myBookmarks}>
         <Bookmark />
       </Button>
-      <Link href="/">
+      <div
+        className="flex items-center gap-4"
+        onClick={handleLogoClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+      >
+        <Image
+          src="/static/images/site-logo.jpeg"
+          alt={SITE_NAME}
+          width={34}
+          height={34}
+        />
         <a className="serif text-2xl">{SITE_NAME}</a>
-      </Link>
+      </div>
       <Button onClick={() => setShowSearch(true)} ariaLabel={STRINGS.search}>
         {showSearch ? <Close /> : <Search />}
       </Button>

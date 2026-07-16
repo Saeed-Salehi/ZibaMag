@@ -34,7 +34,7 @@ const Footer = ({ categories, pages }: TNavigation) => {
             </li>
 
             <li>
-              <Link href="/contributors">
+              <Link href="/contact-us">
                 <a className={s.link}>{STRINGS.contact}</a>
               </Link>
             </li>
