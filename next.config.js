@@ -3,19 +3,30 @@ const path = require('path')
 
 const withOffline = require('next-offline')
 
+// Do NOT expose API_URL to the client — on production it is 127.0.0.1.
 const sharedEnv = {
-  env: {
-    API_URL: process.env.API_URL,
-  },
+  env: {},
 }
 
+// Always proxy media to loopback Strapi. Do NOT use API_URL here — during
+// deploy builds API_URL may be an SSH tunnel port that must not be baked in.
+const strapiProxyOrigin =
+  process.env.STRAPI_PROXY_URL || 'http://127.0.0.1:1337'
+
 module.exports = (phase) => {
+  const uploadsRewrite = {
+    source: '/uploads/:path*',
+    destination: `${strapiProxyOrigin}/uploads/:path*`,
+  }
+
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     return {
       ...sharedEnv,
-      /* Localhost on development for next/image component */
       images: {
-        domains: ['localhost', 'res.cloudinary.com', '79.141.168.50'],
+        domains: ['localhost', '127.0.0.1', 'res.cloudinary.com', '79.141.168.50'],
+      },
+      async rewrites() {
+        return [uploadsRewrite]
       },
     }
   }
@@ -29,21 +40,18 @@ module.exports = (phase) => {
       swDest: 'static/service-worker.js',
       swSrc: path.join(__dirname, 'sw.js'),
     },
-    // I'm using cloudinary as a media provider, but you can use any other provider
-
-    // This are the strapi docs of how to set a different provider
-    // https://strapi.io/documentation/v3.x/plugins/upload.html#using-a-provider
-    // And a list of the available providers
-    // https://www.npmjs.com/search?q=strapi-provider-upload-
-
-    // Also, this are the docs of to change the provider on next.js
-    // https://nextjs.org/docs/basic-features/image-optimization#configuration
-
     images: {
-      domains: ['res.cloudinary.com', '79.141.168.50'],
+      domains: [
+        'localhost',
+        '127.0.0.1',
+        'res.cloudinary.com',
+        '79.141.168.50',
+        'zibamag.ir',
+      ],
     },
     async rewrites() {
       return [
+        uploadsRewrite,
         {
           source: '/service-worker.js',
           destination: '/_next/static/service-worker.js',

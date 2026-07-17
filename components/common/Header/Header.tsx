@@ -12,7 +12,7 @@ import {
   enableBodyScroll,
   clearAllBodyScrollLocks,
 } from 'body-scroll-lock'
-import { SITE_NAME } from '@lib/constants'
+import { SITE_LOGO, SITE_NAME } from '@lib/constants'
 import { STRINGS } from '@lib/strings'
 import Image from 'next/image'
 
@@ -61,12 +61,7 @@ const Header = () => {
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        <Image
-          src="/static/images/site-logo.jpeg"
-          alt={SITE_NAME}
-          width={34}
-          height={34}
-        />
+        <Image src={SITE_LOGO} alt={SITE_NAME} width={34} height={34} />
         <a className="serif text-2xl">{SITE_NAME}</a>
       </div>
       <Button onClick={() => setShowSearch(true)} ariaLabel={STRINGS.search}>

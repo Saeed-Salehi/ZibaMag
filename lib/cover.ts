@@ -1,4 +1,4 @@
-import { getMediaURL } from './api'
+import { getMediaURL, toAbsoluteUrl } from './api'
 
 type CoverSize = 'thumbnail' | 'small' | 'medium' | 'large'
 
@@ -24,7 +24,7 @@ export function getCoverOgImages(cover?: TStrapiImage | null) {
   return Object.values(cover.formats)
     .filter((image): image is TStrapiImageFormat => !!image?.url)
     .map((image) => ({
-      url: getMediaURL(image.url),
+      url: toAbsoluteUrl(getMediaURL(image.url)),
       width: image.width,
       height: image.height,
     }))

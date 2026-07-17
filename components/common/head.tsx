@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import NextHead from 'next/head'
 import { DefaultSeo } from 'next-seo'
-import { getMediaURL } from '@lib/api'
+import { getMediaURL, toAbsoluteUrl } from '@lib/api'
 import { register, unregister } from 'next-offline/runtime'
 import { OG_IMAGE, SEO_DESCRIPTION, SITE_NAME, SITE_URL } from '@lib/constants'
 
@@ -31,7 +31,7 @@ const Head = () => {
           site_name: SITE_NAME,
           images: Object.values(OG_IMAGE).map((image) => {
             return {
-              url: getMediaURL(image.url),
+              url: toAbsoluteUrl(getMediaURL(image.url)),
               width: image.width,
               height: image.height,
             }

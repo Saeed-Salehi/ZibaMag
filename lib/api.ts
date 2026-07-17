@@ -1,11 +1,34 @@
 const DEFAULT_API_URL = 'http://localhost:1337'
 
+/** Server-side Strapi base (on production: http://127.0.0.1:1337). */
 export function getApiBaseUrl() {
   return process.env.API_URL || DEFAULT_API_URL
 }
 
+/**
+ * Base URL for browser-facing media.
+ * Prefer NEXT_PUBLIC_API_URL if set; otherwise NEXT_PUBLIC_SITE_URL so
+ * addresses are absolute (https://zibamag.ir/uploads/...) and proxied by Next.
+ */
+export function getPublicApiBaseUrl() {
+  const explicit = (process.env.NEXT_PUBLIC_API_URL || '')
+    .trim()
+    .replace(/\/$/, '')
+  if (explicit) return explicit
+  return (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '')
+}
+
 export function getStrapiURL(path: string) {
   return `${getApiBaseUrl()}${path}`
+}
+
+export function toAbsoluteUrl(pathOrUrl: string) {
+  if (!pathOrUrl || pathOrUrl === ' ') return pathOrUrl
+  if (pathOrUrl.startsWith('http') || pathOrUrl.startsWith('//')) {
+    return pathOrUrl
+  }
+  const site = getPublicApiBaseUrl()
+  return `${site}${pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`}`
 }
 
 export function isStrapiMediaUrl(url: string) {
@@ -22,7 +45,7 @@ export function isStrapiMediaUrl(url: string) {
   return false
 }
 
-// Helper to make GET requests to Strapi
+// Helper to make GET requests to Strapi (server-side / SSG)
 export async function fetchAPI(path: string) {
   const requestUrl = getStrapiURL(path)
   const response = await fetch(requestUrl)
@@ -47,10 +70,9 @@ export type TContactMessagePayload = {
   message: string
 }
 
-// Helper to submit the contact form to Strapi
+// Contact form posts to Next.js API (proxies to Strapi on 127.0.0.1)
 export async function createContactMessage(payload: TContactMessagePayload) {
-  const requestUrl = getStrapiURL('/contact-messages')
-  const response = await fetch(requestUrl, {
+  const response = await fetch('/api/contact', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -77,12 +99,13 @@ export const getMediaURL = (url?: string) => {
   // Strapi often stores absolute localhost URLs in the CMS; always rewrite uploads.
   if (isStrapiMediaUrl(url)) {
     const path = url.startsWith('http') ? new URL(url).pathname : url
-    return getStrapiURL(path)
+    return toAbsoluteUrl(path)
   }
 
   if (url.startsWith('http')) return url
 
-  return getStrapiURL(url)
+  const path = url.startsWith('/') ? url : `/${url}`
+  return toAbsoluteUrl(path)
 }
 
 export async function getNavigation(): Promise<TNavigation> {

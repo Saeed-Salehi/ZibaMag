@@ -6,7 +6,7 @@ import ExitPreviewButton from '@components/common/ExitPreviewButton'
 import { Layout } from '@components/common/Layout'
 import ArrowLeft from '@components/icons/ArrowLeft'
 import { Button } from '@components/ui/Button'
-import { SITE_LOGO, SITE_NAME } from '@lib/constants'
+import { SITE_LOGO_URL, SITE_NAME } from '@lib/constants'
 import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
 import { getCoverOgImages, getCoverOgImageUrls } from '@lib/cover'
@@ -85,7 +85,7 @@ function ArticlePage({
         dateModified={article.updated_at as string}
         authorName={[article.author.name as string]}
         publisherName={SITE_NAME}
-        publisherLogo={SITE_LOGO}
+        publisherLogo={SITE_LOGO_URL}
         description={article.description as string}
         images={getCoverOgImageUrls(article.cover)}
       />
