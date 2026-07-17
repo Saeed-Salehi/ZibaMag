@@ -1,8 +1,9 @@
 // Global Data
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://zibamag.ir'
-export const SITE_NAME = 'زیبا مگ'
+export const SITE_NAME = 'زیبامگ'
 /** Relative path under /public — use in next/image and local assets */
 export const SITE_LOGO = '/static/images/site-logo.jpeg'
+export const SITE_LOGO_LIGHT = '/static/images/site-logo-light.jpg'
 /** Absolute URL — use in JSON-LD / external consumers */
 export const SITE_LOGO_URL = `${SITE_URL.replace(/\/$/, '')}${SITE_LOGO}`
 

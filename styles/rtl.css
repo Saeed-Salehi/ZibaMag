@@ -35,16 +35,20 @@
   left: 0.5rem;
 }
 
-[dir='rtl'] .toast-container {
-  right: auto;
-  left: 0;
-}
-
 @media (min-width: 768px) {
   [dir='rtl'] .toast-container {
     right: auto;
     left: 1rem;
   }
+}
+
+[dir='rtl'] .toast-item {
+  padding: 0.75rem 1.5rem 0.75rem 0.5rem;
+}
+
+[dir='rtl'] .toast-item-message {
+  padding-right: 0;
+  padding-left: 0.5rem;
 }
 
 [dir='rtl'] .back-button {

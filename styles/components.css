@@ -24,6 +24,59 @@
     overflow: hidden;
   }
 
+  /* Toasts: top of viewport (below header) so they never collide with footer */
+  .toast-container {
+    pointer-events: none;
+    position: fixed;
+    z-index: 50;
+    top: 5rem; /* below header (3.5rem) + gap */
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 40vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  @media (min-width: 768px) {
+    .toast-container {
+      left: auto;
+      right: 1rem;
+      width: 24rem;
+      max-height: 50vh;
+    }
+  }
+
+  .toast-item {
+    pointer-events: auto;
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding: 0.75rem 0.5rem 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--primary-20);
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-size: 0.875rem;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
+    @apply animate-fade-in-up;
+  }
+
+  .toast-item-message {
+    padding-right: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .toast-item-close {
+    flex-shrink: 0;
+    color: var(--primary);
+  }
+
   .markdown {
     @apply text-lg max-w-full leading-article;
     & > * {

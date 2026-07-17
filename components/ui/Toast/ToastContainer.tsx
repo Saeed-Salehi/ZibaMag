@@ -7,9 +7,15 @@ const ToastContainer = ({ toasts }: { toasts: TToast[] }) => {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return null
+  if (!mounted || toasts.length === 0) return null
+
   return createPortal(
-    <div className="fixed right-0 bottom-8 w-screen md:bottom-4 md:w-96 md:right-4 toast-container">
+    <div
+      className="toast-container"
+      role="region"
+      aria-live="polite"
+      aria-relevant="additions"
+    >
       {toasts.map((item: TToast) => (
         <Toast key={item.id} id={item.id}>
           {item.content}

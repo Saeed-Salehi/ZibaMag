@@ -19,13 +19,13 @@ const Toast = ({ children, id }: Props) => {
     return () => {
       clearTimeout(timer)
     }
-  })
+  }, [id, removeToast])
 
   return (
-    <div className="relative shadow flex justify-between items-center text-sm mt-2 mx-auto w-11/12 bg-secondary border py-2 pl-6 pr-2 text-primary rounded-lg animate-fade-in-up md:w-full ">
-      {children}
+    <div className="toast-item">
+      <span className="toast-item-message">{children}</span>
       <Button
-        className=" text-primary"
+        className="toast-item-close"
         onClick={() => removeToast(id)}
         ariaLabel={STRINGS.close}
       >

@@ -12,7 +12,7 @@ import {
   enableBodyScroll,
   clearAllBodyScrollLocks,
 } from 'body-scroll-lock'
-import { SITE_LOGO, SITE_NAME } from '@lib/constants'
+import { SITE_LOGO, SITE_LOGO_LIGHT, SITE_NAME } from '@lib/constants'
 import { STRINGS } from '@lib/strings'
 import Image from 'next/image'
 
@@ -55,14 +55,32 @@ const Header = () => {
         <Bookmark />
       </Button>
       <div
-        className="flex items-center gap-4"
+        className="flex items-center gap-2"
         onClick={handleLogoClick}
         role="button"
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        <Image src={SITE_LOGO} alt={SITE_NAME} width={34} height={34} />
-        <a className="serif text-2xl">{SITE_NAME}</a>
+        {/* Theme via CSS [data-theme] — no useTheme / no src swap */}
+        <span className={s.logoLight}>
+          <Image
+            src={SITE_LOGO_LIGHT}
+            alt={SITE_NAME}
+            width={34}
+            height={34}
+            className="rounded-md"
+          />
+        </span>
+        <span className={s.logoDark} aria-hidden="true">
+          <Image
+            src={SITE_LOGO}
+            alt={SITE_NAME}
+            width={34}
+            height={34}
+            className="rounded-md"
+          />
+        </span>
+        <a className="serif text-2xl font-bold">{SITE_NAME}</a>
       </div>
       <Button onClick={() => setShowSearch(true)} ariaLabel={STRINGS.search}>
         {showSearch ? <Close /> : <Search />}

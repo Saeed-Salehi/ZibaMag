@@ -23,7 +23,13 @@ module.exports = (phase) => {
     return {
       ...sharedEnv,
       images: {
-        domains: ['localhost', '127.0.0.1', 'res.cloudinary.com', '79.141.168.50'],
+        domains: [
+          'localhost',
+          '127.0.0.1',
+          'res.cloudinary.com',
+          '79.141.168.50',
+          'zibamag.ir',
+        ],
       },
       async rewrites() {
         return [uploadsRewrite]
