@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import s from './Header.module.css'
 import { useRouter } from 'next/router'
@@ -15,18 +15,21 @@ import {
 import { SITE_LOGO, SITE_LOGO_LIGHT, SITE_NAME } from '@lib/constants'
 import { STRINGS } from '@lib/strings'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const Header = () => {
   const router = useRouter()
   const [showSearch, setShowSearch] = useState(false)
+  const [query, setQuery] = useState('')
   const isMobile = useIsMobile()
-
   const searchRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (searchRef.current && isMobile) {
       if (showSearch) {
         disableBodyScroll(searchRef.current)
+        inputRef.current?.focus()
       } else {
         enableBodyScroll(searchRef.current)
       }
@@ -36,96 +39,111 @@ const Header = () => {
     }
   }, [showSearch, isMobile])
 
-  const handleLogoClick = () => {
-    router.push('/')
+  const goSearch = (value: string) => {
+    const q = value.trim()
+    setShowSearch(false)
+    router.push(
+      {
+        pathname: '/search',
+        query: q ? { q } : {},
+      },
+      undefined,
+      { shallow: false }
+    )
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      handleLogoClick()
-    }
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    goSearch(query)
   }
 
   return (
-    <header
-      ref={searchRef}
-      className="fixed bg-secondary h-14 top-0 left-0 right-0 px-4 flex justify-between items-center z-20 "
-    >
-      <Button href="/lists" ariaLabel={STRINGS.myBookmarks}>
-        <Bookmark />
-      </Button>
-      <div
-        className="flex items-center gap-2"
-        onClick={handleLogoClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-      >
-        {/* Theme via CSS [data-theme] — no useTheme / no src swap */}
-        <span className={s.logoLight}>
-          <Image
-            src={SITE_LOGO_LIGHT}
-            alt={SITE_NAME}
-            width={34}
-            height={34}
-            className="rounded-md"
-          />
-        </span>
-        <span className={s.logoDark} aria-hidden="true">
-          <Image
-            src={SITE_LOGO}
-            alt={SITE_NAME}
-            width={34}
-            height={34}
-            className="rounded-md"
-          />
-        </span>
-        <a className="serif text-2xl font-bold">{SITE_NAME}</a>
-      </div>
-      <Button onClick={() => setShowSearch(true)} ariaLabel={STRINGS.search}>
-        {showSearch ? <Close /> : <Search />}
-      </Button>
+    <header ref={searchRef} className={s.header}>
+      <div className={s.inner}>
+        <div className={s.left}>
+          <Link href="/">
+            <a className={s.brand} aria-label={SITE_NAME}>
+              <span className={s.logoLight}>
+                <Image
+                  src={SITE_LOGO_LIGHT}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              </span>
+              <span className={s.logoDark} aria-hidden="true">
+                <Image
+                  src={SITE_LOGO}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              </span>
+              <span className={s.brandName}>{SITE_NAME}</span>
+            </a>
+          </Link>
+        </div>
 
-      <div
-        className={cn(
-          s.searchContainer,
-          'search-container',
-          showSearch ? 'flex' : 'hidden'
-        )}
-      >
-        <label className="flex items-center border-b w-full py-2 pl-3 focus-within:border-primary md:pb-0">
-          <span className="absolute search-input-icon">
-            <Search />
+        <form className={s.desktopSearch} onSubmit={onSubmit} role="search">
+          <span className={s.searchIcon} aria-hidden="true">
+            <Search width="18" height="18" />
           </span>
           <input
             type="search"
-            inputMode="search"
-            name="search"
-            id="search"
+            name="q"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder={STRINGS.searchPlaceholder}
-            className="bg-transparent outline-none w-full py-2 pr-2 pl-9 search-btn-none lg:text-sm search-input"
-            onKeyUp={(e) => {
-              e.preventDefault()
-              if (e.key === 'Enter') {
-                const q = e.currentTarget.value
-                router.push(
-                  {
-                    pathname: '/search',
-                    query: q ? { q } : {},
-                  },
-                  undefined,
-                  { shallow: true }
-                )
-              }
-            }}
+            className={s.searchInput}
+            aria-label={STRINGS.search}
+          />
+        </form>
+
+        <div className={s.actions}>
+          <Button
+            className={s.iconBtn}
+            onClick={() => setShowSearch(true)}
+            ariaLabel={STRINGS.search}
+          >
+            <Search width="20" height="20" />
+          </Button>
+          <Button
+            href="/lists"
+            className={s.iconBtn}
+            ariaLabel={STRINGS.myBookmarks}
+          >
+            <Bookmark width="20" height="20" />
+          </Button>
+        </div>
+      </div>
+
+      <div
+        className={cn(s.searchOverlay, showSearch ? s.searchOpen : undefined)}
+      >
+        <form className={s.mobileSearch} onSubmit={onSubmit} role="search">
+          <span className={s.searchIcon} aria-hidden="true">
+            <Search width="18" height="18" />
+          </span>
+          <input
+            ref={inputRef}
+            type="search"
+            name="q"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={STRINGS.searchPlaceholder}
+            className={s.searchInput}
+            aria-label={STRINGS.search}
           />
           <Button
             onClick={() => setShowSearch(false)}
             ariaLabel={STRINGS.closeSearch}
+            className={s.iconBtn}
           >
-            <Close />
+            <Close width="20" height="20" />
           </Button>
-        </label>
+        </form>
       </div>
     </header>
   )

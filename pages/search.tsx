@@ -7,10 +7,11 @@ import { Layout } from '@components/common/Layout'
 import SearchInput from '@components/search/SearchInput'
 import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
+import { SITE_NAME } from '@lib/constants'
 
 export async function getStaticProps() {
   const categories: TCategory[] = await fetchAPI('/categories')
-  const articles: TArticle[] = await fetchAPI('/articles')
+  const articles: TArticle[] = await fetchAPI('/articles?_limit=-1')
   const navigation: TNavigation = await getNavigation()
 
   return {
@@ -31,44 +32,49 @@ function SearchPage({
 
   const filteredArticles = articles.filter((a: TArticle) => {
     if (!stringQuery) return false
+    const haystack = `${a.title} ${a.description || ''}`.toLowerCase()
+    const matchesQuery = haystack.includes(stringQuery)
+    if (!matchesQuery) return false
     if (category) {
-      return (
-        a.title.toLowerCase().includes(stringQuery) &&
-        a.category.slug === decodeURIComponent(category as string)
-      )
+      return a.category.slug === decodeURIComponent(category as string)
     }
-    return a.title.toLowerCase().includes(stringQuery)
+    return true
   })
 
-  const sortedArticles = filteredArticles.sort((a: TArticle, b: TArticle) => {
-    const key = 'published_at'
-    if (sort === 'desc') return a[key] < b[key] ? 1 : a[key] > b[key] ? -1 : 0
-    return a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0
+  const sortedArticles = [...filteredArticles].sort((a, b) => {
+    const aTime = new Date(a.published_at as string).getTime()
+    const bTime = new Date(b.published_at as string).getTime()
+    if (sort === 'asc') return aTime - bTime
+    return bTime - aTime
   })
 
   return (
     <Layout navigation={navigation}>
       <NextSeo
-        title={STRINGS.search}
+        title={`${STRINGS.search} | ${SITE_NAME}`}
         description={STRINGS.searchDescription}
         canonical={getCanonicalUrl('/search')}
         noindex
         nofollow
       />
-      <main className="min-h-screen px-4 pt-6 pb-20 flex flex-col mx-auto md:w-3/4 lg:w-2/3 xl:w-7/12">
-        <SearchInput categories={categories} />
 
-        {sortedArticles.length !== 0 ? (
-          <ArticlesList
-            articles={sortedArticles}
-            title={STRINGS.searchResultCount(sortedArticles.length)}
-          />
-        ) : (
-          <p className="text-center my-auto text-secondary">
-            {stringQuery ? STRINGS.searchNoResults : STRINGS.searchPrompt}
-          </p>
-        )}
-      </main>
+      <header className="archive-hero">
+        <h1>{STRINGS.search}</h1>
+        <p>{STRINGS.searchDescription}</p>
+      </header>
+
+      <SearchInput categories={categories} />
+
+      {sortedArticles.length !== 0 ? (
+        <ArticlesList
+          articles={sortedArticles}
+          title={STRINGS.searchResultCount(sortedArticles.length)}
+        />
+      ) : (
+        <p className="empty-state">
+          {stringQuery ? STRINGS.searchNoResults : STRINGS.searchPrompt}
+        </p>
+      )}
     </Layout>
   )
 }

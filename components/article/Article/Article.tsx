@@ -1,47 +1,66 @@
 import Link from 'next/link'
 import { Markdown } from '@components/common/Markdown'
-import AuthorCard from './AuthorCard'
 import { Date } from '@components/ui/Date'
 import ActionButtons from './ActionButtons'
 import Image from 'next/image'
 import { STRINGS } from '@lib/strings'
 import { getCoverMediaUrl } from '@lib/cover'
+import TagList from '../Tags/TagList'
+import StarRating from '../Engagement/StarRating'
+import CommentSection from '../Engagement/CommentSection'
+import RelatedArticles from '../RelatedArticles/RelatedArticles'
 
-function Article({ article }: { article: TArticle | undefined }) {
+function Article({
+  article,
+  comments = [],
+  related = [],
+}: {
+  article: TArticle | undefined
+  comments?: TComment[]
+  related?: TArticle[]
+}) {
   if (!article) return <p>{STRINGS.somethingWentWrong}</p>
 
   const coverUrl = getCoverMediaUrl(article.cover, 'medium')
 
   return (
-    <article>
-      <header className="py-10">
-        <Link href={`/${article.category.slug}`}>
-          <a className="text-sm font-bold text-accent">
-            {article.category.title}
-          </a>
-        </Link>
-
-        <h1 className="serif pb-4">{article.title}</h1>
-
-        <p className="mb-2">
-          {STRINGS.by}{' '}
-          <Link href={`/contributors/${article.author.slug}`}>
-            <a className="font-bold">{article.author.name}</a>
+    <article className="article-page">
+      <header className="article-header">
+        <div className="medium-meta article-header-meta">
+          <Link href={`/${article.category.slug}`}>
+            <a className="medium-topic">{article.category.title}</a>
           </Link>
-        </p>
+          {article.featured && <span>★ {STRINGS.featuredStar}</span>}
+          {(article.views || 0) > 0 && (
+            <span>
+              {(article.views || 0).toLocaleString('fa-IR')} {STRINGS.views}
+            </span>
+          )}
+        </div>
 
-        <Date date={article.published_at as string} />
+        <h1 className="article-title serif">{article.title}</h1>
+
+        <div className="medium-meta">
+          <span>
+            {STRINGS.by}{' '}
+            <Link href={`/contributors/${article.author.slug}`}>
+              <a>{article.author.name}</a>
+            </Link>
+          </span>
+          <span>·</span>
+          <Date date={article.published_at as string} />
+        </div>
 
         <ActionButtons article={article} />
 
         {coverUrl && article.cover && (
-          <div className="my-8 article-image">
+          <div className="article-cover">
             <Image
               src={coverUrl}
               alt={article.cover.alternativeText || ''}
               width={article.cover.width}
               height={article.cover.height}
-              className="article-image"
+              priority
             />
           </div>
         )}
@@ -49,10 +68,20 @@ function Article({ article }: { article: TArticle | undefined }) {
 
       <Markdown content={article.content} />
 
-      <footer className="border-t py-6 mt-24">
-        <AuthorCard author={article.author} />
-        <ActionButtons article={article} />
-      </footer>
+      <section className="article-engagement" aria-label={STRINGS.comments}>
+        <div className="article-engagement-block">
+          <h2 className="article-engagement-title">{STRINGS.rateArticle}</h2>
+          <StarRating article={article} />
+        </div>
+
+        <div className="article-engagement-block">
+          <TagList tags={article.tags} />
+        </div>
+
+        <CommentSection articleId={article.id} comments={comments} />
+      </section>
+
+      <RelatedArticles articles={related} />
     </article>
   )
 }

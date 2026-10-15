@@ -1,84 +1,153 @@
 .cover {
-  border-radius: 15px;
   overflow: hidden;
+  background: var(--primary-05);
 }
 
 .default {
-  @apply cursor-pointer py-6 border-b relative;
-  & .cover {
-    @apply relative pb-3/5 w-full xl:pb-2/5;
-  }
-  & ul {
-    @apply absolute bottom-0 right-0 pb-3 flex;
-  }
-}
-.default:last-child {
-  @apply border-none;
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  gap: 1.25rem;
+  align-items: start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--primary-10);
 }
 
-@media screen and (min-width: 1024px) {
+.default .body {
+  min-width: 0;
+}
+
+.default .cover {
+  position: relative;
+  width: 132px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.default .title {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+  margin: 0.35rem 0 0.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.default .dek {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--primary-60);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0.65rem;
+}
+
+.default .title:hover,
+.default .dek:hover {
+  color: var(--primary-80);
+}
+
+@media screen and (min-width: 768px) {
   .default {
-    @apply flex flex-row-reverse items-center justify-between gap-20 cursor-pointer mx-auto w-5/6 py-10;
-    & .cover {
-      flex: 0.8;
-      @apply relative lg:pb-1/4;
-    }
-    & section {
-      @apply py-8;
-      flex: 1;
-    }
+    grid-template-columns: 1fr 200px;
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+
+  .default .cover {
+    width: 200px;
+    height: 150px;
+  }
+
+  .default .title {
+    font-size: 1.4rem;
   }
 }
 
 .top {
-  @apply flex py-6 items-center justify-between relative min-w-full cursor-pointer;
-  & section {
-    flex: 1;
-  }
-  & .topNumber {
-    flex: 0.125;
-    @apply text-2xl font-bold text-primary-20;
-  }
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.85rem 0;
+}
+
+.top section {
+  flex: 1;
+  min-width: 0;
+}
+
+.topNumber {
+  width: 1.75rem;
+  flex-shrink: 0;
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--primary-20);
+  font-family: var(--font-serif);
+}
+
+.top .title {
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .hero {
-  @apply relative cursor-pointer transition-transform transform scale-100;
-  & .cover {
-    @apply relative pb-3/5 w-full;
-  }
-  & ul {
-    @apply flex;
-  }
+  position: relative;
+}
+
+.hero .cover {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56%;
 }
 
 .lists {
-  @apply cursor-pointer mb-10 py-16 border-b flex flex-row-reverse items-center justify-between relative mx-auto w-full mr-10 md:w-10/12 md:py-12;
-  scroll-snap-align: start;
-  & .cover {
-    @apply relative pb-2/5 flex-1 xl:pb-1/4;
-  }
-  & section {
-    flex: 1.5;
-    @apply mr-8;
-  }
-  & ul {
-    @apply flex absolute bottom-0 bg-secondary right-0 transform translate-x-1 translate-y-1;
-  }
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--primary-10);
+}
+
+.lists .cover {
+  position: relative;
+  width: 120px;
+  height: 96px;
+}
+
+.lists section {
+  min-width: 0;
 }
 
 .carousel {
-  @apply cursor-pointer flex flex-row-reverse items-center justify-between relative min-w-full mr-10;
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 1rem;
+  min-width: 85vw;
+  max-width: 22rem;
   scroll-snap-align: start;
-  & .cover {
-    @apply relative pb-2/3 flex-1 xl:pb-1/3;
-  }
-  & section {
-    flex: 1.5;
-    @apply mr-8;
-  }
-  & ul {
-    @apply flex absolute bottom-0 bg-primary right-0 transform translate-x-1 translate-y-1;
-  }
+  margin-left: 1rem;
+  padding: 0.5rem 0;
+}
+
+.carousel .cover {
+  position: relative;
+  width: 110px;
+  height: 88px;
+}
+
+.carousel section {
+  min-width: 0;
 }
 
 .title {

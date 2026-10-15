@@ -10,9 +10,11 @@ import { SITE_LOGO_URL, SITE_NAME } from '@lib/constants'
 import { getCanonicalUrl, getPreviewRobots, REVALIDATE_SECONDS } from '@lib/seo'
 import { STRINGS } from '@lib/strings'
 import { getCoverOgImages, getCoverOgImageUrls } from '@lib/cover'
+import { getRelatedArticles } from '@lib/articles'
+import ViewTracker from '@components/article/Engagement/ViewTracker'
 
 export async function getStaticPaths() {
-  const articles: TArticle[] = await fetchAPI('/articles')
+  const articles: TArticle[] = await fetchAPI('/articles?_limit=-1')
 
   return {
     paths: articles.map((article) => `/articles/${article.slug}`),
@@ -36,8 +38,23 @@ export async function getStaticProps({
 
   if (!article) return { notFound: true }
 
+  const [allArticles, comments]: [TArticle[], TComment[]] = await Promise.all([
+    fetchAPI('/articles?_limit=-1'),
+    fetchAPI(
+      `/comments?article=${article.id}&approved=true&_sort=created_at:DESC`
+    ).catch(() => []),
+  ])
+
+  const related = getRelatedArticles(article, allArticles)
+
   return {
-    props: { preview, navigation, article },
+    props: {
+      preview,
+      navigation,
+      article,
+      comments,
+      related,
+    },
     revalidate: REVALIDATE_SECONDS,
   }
 }
@@ -46,13 +63,18 @@ function ArticlePage({
   article,
   navigation,
   preview,
+  comments,
+  related,
 }: {
   article: TArticle
   navigation: TNavigation
   preview: boolean
+  comments: TComment[]
+  related: TArticle[]
 }) {
   const fullURL = getCanonicalUrl(`/articles/${article.slug}`)
   const authorURL = getCanonicalUrl(`/contributors/${article.author.slug}`)
+  const tagTitles = (article.tags || []).map((tag) => tag.title)
 
   return (
     <Layout navigation={navigation} isMarkdown>
@@ -71,7 +93,7 @@ function ArticlePage({
             modifiedTime: article.updated_at as string,
             section: article.category.title,
             authors: [authorURL],
-            tags: [article.category.title],
+            tags: tagTitles.length ? tagTitles : [article.category.title],
           },
           ...(getCoverOgImages(article.cover).length > 0 && {
             images: getCoverOgImages(article.cover),
@@ -90,10 +112,16 @@ function ArticlePage({
         images={getCoverOgImageUrls(article.cover)}
       />
 
-      <Button ariaLabel={STRINGS.goBack} href="/" className="-ml-2 back-button">
+      <ViewTracker articleId={article.id} />
+
+      <Button
+        ariaLabel={STRINGS.goBack}
+        href="/"
+        className="article-back back-button"
+      >
         <ArrowLeft className="icon-mirror" />
       </Button>
-      <Article article={article} />
+      <Article article={article} comments={comments} related={related} />
       {preview && <ExitPreviewButton />}
     </Layout>
   )

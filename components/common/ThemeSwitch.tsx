@@ -1,37 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import ChevronDown from '@components/icons/ChevronDown'
+import cn from 'classnames'
 import { STRINGS } from '@lib/strings'
+
+const OPTIONS = [
+  { value: 'system', label: STRINGS.themeSystem },
+  { value: 'light', label: STRINGS.themeLight },
+  { value: 'dark', label: STRINGS.themeDark },
+]
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
 
   useEffect(() => setMounted(true), [])
-
-  // Prevent mounting on server, needs to be mounted on the client
   if (!mounted) return null
 
   return (
-    <label>
-      <div className="relative w-max mx-auto my-2 ">
-        {/* eslint-disable-next-line jsx-a11y/no-onchange */}
-        <select
-          className="select-primary bg-secondary md:text-sm "
-          id="theme"
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          aria-label="Change theme color"
+    <div className="theme-switch" role="group" aria-label="Change theme color">
+      {OPTIONS.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          className={cn(
+            'filter-chip',
+            theme === option.value && 'filter-chip-active'
+          )}
+          aria-pressed={theme === option.value}
+          onClick={() => setTheme(option.value)}
         >
-          <option value="system">{STRINGS.themeSystem}</option>
-          <option value="dark">{STRINGS.themeDark}</option>
-          <option value="light">{STRINGS.themeLight}</option>
-        </select>
-        <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none theme-select-chevron">
-          <ChevronDown width="20" height="20" />
-        </span>
-      </div>
-    </label>
+          {option.label}
+        </button>
+      ))}
+    </div>
   )
 }
 

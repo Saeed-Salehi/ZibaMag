@@ -2,7 +2,6 @@ import { Date } from '@components/ui/Date'
 import Link from 'next/link'
 import s from './ArticleCard.module.css'
 import cn from 'classnames'
-import { STRINGS } from '@lib/strings'
 
 type Props = {
   article: TArticle
@@ -14,36 +13,22 @@ const ArticleCardTop = ({ article, index }: Props) => {
     <article className={s.top}>
       <div className={s.topNumber}>{index + 1}</div>
       <section>
-        <Link href={`/articles/${article.slug}`}>
-          <a>
-            <h3
-              className={cn(
-                s.title,
-                'serif leading-tight overflow-hidden max-h-28 mb-3 hover:underline text-xl'
-              )}
-            >
-              {article.title}
-            </h3>
+        <Link href={`/contributors/${article.author.slug}`}>
+          <a className="medium-meta" style={{ marginBottom: 4 }}>
+            {article.author.name}
           </a>
         </Link>
-
-        <div className="text-sm flex flex-wrap">
-          <p>
-            {STRINGS.by}{' '}
-            <Link href={`/contributors/${article.author.slug}`}>
-              <a className="pr-1 font-bold hover:underline">
-                {article.author.name}
-              </a>
-            </Link>
-          </p>
-          <span className="mx-3">|</span>
-          <Link href={`/${article.category.slug}`}>
-            <a className="text-accent hover:underline">
-              {article.category.title}
-            </a>
-          </Link>
-          <span className="mx-3">|</span>
+        <Link href={`/articles/${article.slug}`}>
+          <a>
+            <h3 className={cn(s.title, 'serif')}>{article.title}</h3>
+          </a>
+        </Link>
+        <div className="medium-meta">
           <Date date={article.published_at as string} />
+          <span>·</span>
+          <Link href={`/${article.category.slug}`}>
+            <a>{article.category.title}</a>
+          </Link>
         </div>
       </section>
     </article>

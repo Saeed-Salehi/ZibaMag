@@ -8,10 +8,29 @@ import { STRINGS } from '@lib/strings'
 import { getCoverMediaUrl } from '@lib/cover'
 
 const ArticleCardList = ({ article }: { article: TArticle }) => {
-  const coverUrl = getCoverMediaUrl(article.cover)
+  const coverUrl = getCoverMediaUrl(article.cover, 'small')
 
   return (
     <article className={s.lists}>
+      <section>
+        <Link href={`/${article.category.slug}`}>
+          <a className="medium-topic">{article.category.title}</a>
+        </Link>
+        <Link href={`/lists/${article.slug}`}>
+          <a>
+            <h3 className={cn(s.title, 'serif')}>{article.title}</h3>
+          </a>
+        </Link>
+        <div className="medium-meta">
+          <Link href={`/contributors/${article.author.slug}`}>
+            <a>{article.author.name}</a>
+          </Link>
+          <span>·</span>
+          <Date date={article.published_at as string} />
+        </div>
+        <ActionButtons article={article} />
+      </section>
+
       {coverUrl && (
         <Link href={`/lists/${article.slug}`}>
           <a aria-label={STRINGS.linkTo(article.title)} className={s.cover}>
@@ -24,35 +43,6 @@ const ArticleCardList = ({ article }: { article: TArticle }) => {
           </a>
         </Link>
       )}
-
-      <section className="pt-4">
-        <Link href={`/${article.category.slug}`}>
-          <a className="text-sm font-bold text-accent hover:underline">
-            {article.category.title}
-          </a>
-        </Link>
-        <Link href={`/lists/${article.slug}`}>
-          <a>
-            <h3
-              className={cn(
-                s.title,
-                'serif leading-tight overflow-hidden max-h-28 hover:underline'
-              )}
-            >
-              {article.title}
-            </h3>
-          </a>
-        </Link>
-        <div className="serif text-s">
-          {STRINGS.by}{' '}
-          <Link href={`/contributors/${article.author.slug}`}>
-            <a className="hover:underline">{article.author.name}</a>
-          </Link>
-        </div>
-        <Date date={article.published_at as string} />
-      </section>
-
-      <ActionButtons article={article} />
     </article>
   )
 }

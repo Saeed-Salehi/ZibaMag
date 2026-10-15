@@ -1,6 +1,7 @@
 import { ArticleCard } from '..'
 import ArticleCardLists from '../ArticleCard/ArticleCardLists'
 import ArticleCardTop from '../ArticleCard/ArticleCardTop'
+import cn from 'classnames'
 
 type Props = {
   articles: TArticle[]
@@ -34,11 +35,15 @@ const ArticlesList = ({
   }
 
   return (
-    <section className={className}>
-      <div className="mt-10 text-center py-4 font-serif text-xl border-b border-primary-50">
-        {title}
+    <section className={cn(className)}>
+      {title ? (
+        <div className="section-heading">
+          <h2>{title}</h2>
+        </div>
+      ) : null}
+      <div className={variant === 'default' ? 'articles-stack' : undefined}>
+        {renderCards()}
       </div>
-      {renderCards()}
     </section>
   )
 }

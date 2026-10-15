@@ -1,7 +1,9 @@
 import { InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
+import Link from 'next/link'
 import { ArticlesCarousel, ArticlesList } from '@components/article'
-import { fetchAPI, getNavigation } from '@lib/api'
+import FeaturedPopularRow from '@components/article/FeaturedPopularRow/FeaturedPopularRow'
+import { fetchAPI, getGlobal, getNavigation } from '@lib/api'
 import { Layout } from '@components/common/Layout'
 import { useMediaQuery } from '@lib/hooks/use-media-queries'
 import ArticlesHero from '@components/article/ArticlesHero/ArticlesHero'
@@ -11,11 +13,23 @@ import { getCanonicalUrl, REVALIDATE_SECONDS } from '@lib/seo'
 import { getArticlePageSections } from '@lib/article-sections'
 
 export async function getStaticProps() {
-  const articles: TArticle[] = await fetchAPI('/articles')
-  const navigation: TNavigation = await getNavigation()
+  const [articles, navigation, global]: [
+    TArticle[],
+    TNavigation,
+    TGlobal | null
+  ] = await Promise.all([
+    fetchAPI('/articles?_sort=published_at:DESC&_limit=-1'),
+    getNavigation(),
+    getGlobal(),
+  ])
 
   return {
-    props: { articles, navigation },
+    props: {
+      articles,
+      navigation,
+      homeHero: global?.homeHero || null,
+      homeFeed: global?.homeFeed || [],
+    },
     revalidate: REVALIDATE_SECONDS,
   }
 }
@@ -23,9 +37,14 @@ export async function getStaticProps() {
 function Home({
   articles,
   navigation,
+  homeHero,
+  homeFeed,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const isTablet = useMediaQuery(1023)
-  const sections = getArticlePageSections(articles)
+  const sections = getArticlePageSections(articles, {
+    heroArticle: homeHero,
+    feedArticles: homeFeed,
+  })
 
   return (
     <Layout navigation={navigation}>
@@ -40,7 +59,6 @@ function Home({
         }}
       />
       {isTablet ? (
-        //Tablet and smaller devices
         <ArticlesCarousel title={STRINGS.topStories} articles={sections.hero} />
       ) : (
         <ArticlesHero articles={sections.hero} />
@@ -48,22 +66,20 @@ function Home({
 
       <ArticlesList articles={sections.recent} title={STRINGS.recent} />
 
-      <div className="lg:py-24 lg:flex lg:w-full lg:gap-28 lg:mx-auto">
-        <ArticlesList
-          articles={sections.featured}
-          title={STRINGS.featured}
-          variant="top"
-          className="lg:w-1/2"
-        />
-        <ArticlesList
-          articles={sections.popular}
-          title={STRINGS.popular}
-          variant="top"
-          className="lg:w-1/2"
-        />
-      </div>
+      <FeaturedPopularRow
+        featured={sections.featured}
+        popular={sections.popular}
+      />
 
       <ArticlesList articles={sections.more} title={STRINGS.moreArticles} />
+
+      <div className="feed-cta">
+        <Link href="/articles">
+          <a className="magazine-btn magazine-btn-ghost">
+            {STRINGS.viewAllArticles}
+          </a>
+        </Link>
+      </div>
     </Layout>
   )
 }

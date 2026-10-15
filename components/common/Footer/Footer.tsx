@@ -1,86 +1,87 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import ThemeSwitch from '../ThemeSwitch'
-import s from './Footer.module.css'
 import { STRINGS } from '@lib/strings'
-import { SITE_NAME } from '@lib/constants'
+import { SITE_LOGO, SITE_LOGO_LIGHT, SITE_NAME } from '@lib/constants'
 
 const Footer = ({ categories, pages }: TNavigation) => {
   return (
-    <footer className="block bottom-0 left-0 right-0 bg-primary-05 px-6 py-6 md:px-32 lg:px-48 xl:px-1/5">
-      <nav
-        className="flex flex-col  mt-6 mb-6 flex-wrap md:flex-row md:justify-between"
-        aria-label="Footer Nav"
-      >
-        <div>
-          <h3 className={s.heading}>{STRINGS.sections}</h3>
-          <ul className={s.ul}>
-            {categories.map((category) => (
-              <li key={category.slug}>
-                <Link href={`/${category.slug}`}>
-                  <a className={s.link}>{category.title}</a>
-                </Link>
-              </li>
-            ))}
-          </ul>
+    <footer className="site-footer">
+      <div className="site-footer-inner">
+        <div className="site-footer-brand">
+          <Link href="/">
+            <a className="site-footer-logo" aria-label={SITE_NAME}>
+              <span className="site-footer-logo-light">
+                <Image
+                  src={SITE_LOGO_LIGHT}
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="rounded-full"
+                />
+              </span>
+              <span className="site-footer-logo-dark" aria-hidden="true">
+                <Image
+                  src={SITE_LOGO}
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="rounded-full"
+                />
+              </span>
+              <span className="site-footer-title">{SITE_NAME}</span>
+            </a>
+          </Link>
+          <p className="site-footer-blurb">{STRINGS.footerBlurb}</p>
         </div>
 
-        <div>
-          <h3 className={s.heading}>{STRINGS.more}</h3>
-          <ul className={s.ul}>
-            <li>
+        <div className="site-footer-cols">
+          <div className="site-footer-col">
+            <h3 className="site-footer-heading">{STRINGS.sections}</h3>
+            <nav aria-label={STRINGS.sections}>
+              <Link href="/articles">
+                <a>{STRINGS.allArticles}</a>
+              </Link>
+              {categories.map((category) => (
+                <Link href={`/${category.slug}`} key={category.slug}>
+                  <a>{category.title}</a>
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="site-footer-col">
+            <h3 className="site-footer-heading">{STRINGS.more}</h3>
+            <nav aria-label={STRINGS.more}>
               <Link href="/contributors">
-                <a className={s.link}>{STRINGS.contributors}</a>
+                <a>{STRINGS.contributors}</a>
               </Link>
-            </li>
-            <li>
               <Link href="/contact-us">
-                <a className={s.link}>{STRINGS.contact}</a>
+                <a>{STRINGS.contact}</a>
               </Link>
-            </li>
-            {pages.map((page) => (
-              <li key={page.slug}>
-                <Link href={`/pages/${page.slug}`}>
-                  <a className={s.link}>{page.title}</a>
+              {pages.map((page) => (
+                <Link href={`/pages/${page.slug}`} key={page.slug}>
+                  <a>{page.title}</a>
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className={s.heading}>{STRINGS.featuredLinks}</h3>
-          <ul className={s.ul}>
-            <li>
+              ))}
               <a
                 href="https://doctor-laser.ir"
-                className={s.link}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {STRINGS.clinicManagementSystem}
               </a>
-            </li>
-            <li>
-              <a
-                href="https://pchas.ir"
-                className={s.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {STRINGS.developerTeam}
-              </a>
-            </li>
-          </ul>
+            </nav>
+          </div>
         </div>
-      </nav>
+      </div>
 
-      {/* <SocialUrls /> */}
-
-      <ThemeSwitch />
-
-      <p className="text-center text-sm text-primary-60 pt-2 pb-1">
-        © {SITE_NAME} — {STRINGS.footerRights}
-      </p>
+      <div className="site-footer-bottom">
+        <p className="site-footer-copy">
+          © {new Date().getFullYear()} {SITE_NAME} — {STRINGS.footerRights}
+        </p>
+        <ThemeSwitch />
+      </div>
     </footer>
   )
 }

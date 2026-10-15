@@ -1,6 +1,8 @@
 import { ArticlesCarousel, ArticlesList } from '@components/article'
+import FeaturedPopularRow from '@components/article/FeaturedPopularRow/FeaturedPopularRow'
 import { Hero } from '@components/common/Hero'
 import { GetStaticPropsContext } from 'next'
+import Link from 'next/link'
 import { fetchAPI, getNavigation } from '@lib/api'
 import { NextSeo } from 'next-seo'
 import { Layout } from '@components/common/Layout'
@@ -29,7 +31,7 @@ export async function getStaticProps({
   if (!category) return { notFound: true }
 
   const articles: TArticle[] = await fetchAPI(
-    `/articles?category.slug=${params?.slug}`
+    `/articles?category.slug=${params?.slug}&_sort=published_at:DESC&_limit=-1`
   )
   const navigation: TNavigation = await getNavigation()
 
@@ -54,7 +56,10 @@ function CategoryPage({
 }) {
   const isTablet = useMediaQuery(1023)
   const canonical = getCanonicalUrl(`/${category.slug}`)
-  const sections = getArticlePageSections(articles)
+  const sections = getArticlePageSections(articles, {
+    heroArticle: category.heroArticle,
+    feedArticles: category.feedArticles,
+  })
 
   const seo = (
     <NextSeo
@@ -91,7 +96,7 @@ function CategoryPage({
       {seo}
 
       <Layout navigation={navigation}>
-        <Hero title={category.title} />
+        <Hero title={category.title} description={category.description} />
         {isTablet ? (
           <ArticlesCarousel
             title={STRINGS.topStories}
@@ -103,22 +108,20 @@ function CategoryPage({
 
         <ArticlesList articles={sections.recent} title={STRINGS.recent} />
 
-        <div className="lg:py-24 lg:flex lg:gap-28 lg:mx-auto">
-          <ArticlesList
-            articles={sections.featured}
-            title={STRINGS.featured}
-            variant="top"
-            className="lg:w-1/2"
-          />
-          <ArticlesList
-            articles={sections.popular}
-            title={STRINGS.popular}
-            variant="top"
-            className="lg:w-1/2"
-          />
-        </div>
+        <FeaturedPopularRow
+          featured={sections.featured}
+          popular={sections.popular}
+        />
 
         <ArticlesList articles={sections.more} title={STRINGS.moreArticles} />
+
+        <div className="mt-12 text-center">
+          <Link href={`/articles?category=${category.slug}`}>
+            <a className="magazine-btn magazine-btn-ghost text-accent border-accent">
+              {STRINGS.viewAllArticles}
+            </a>
+          </Link>
+        </div>
       </Layout>
     </>
   )

@@ -1,18 +1,14 @@
-const HERO_SIZE = 4
-const SECTION_SIZE = 5
-
-function getSectionArticles(
-  articles: TArticle[],
-  offset: number,
-  count: number
-): TArticle[] {
-  const total = articles.length
-  const size = Math.min(count, total)
-
-  return Array.from({ length: size }, (_, index) => {
-    return articles[(offset + index) % total]
-  })
-}
+import {
+  HERO_SIDE_SIZE,
+  SECTION_SIZE,
+  articleKey,
+  averageRating,
+  preferCoverLead,
+  sortByNewest,
+  sortByRating,
+  sortByViews,
+  takeUnused,
+} from './articles'
 
 export type ArticlePageSections = {
   hero: TArticle[]
@@ -22,37 +18,99 @@ export type ArticlePageSections = {
   more: TArticle[]
 }
 
+type FeedOptions = {
+  heroArticle?: TArticle | null
+  feedArticles?: TArticle[] | null
+}
+
+function resolveArticle(
+  ref: TArticle | number | null | undefined,
+  byId: Map<number, TArticle>
+): TArticle | undefined {
+  if (!ref) return undefined
+  if (typeof ref === 'number') return byId.get(ref)
+  return byId.get(ref.id) || ref
+}
+
 export function getArticlePageSections(
-  articles: TArticle[]
+  articles: TArticle[],
+  options: FeedOptions = {}
 ): ArticlePageSections {
-  const total = articles.length
-
-  if (total === 0) {
-    return {
-      hero: [],
-      recent: [],
-      featured: [],
-      popular: [],
-      more: [],
-    }
+  if (articles.length === 0) {
+    return { hero: [], recent: [], featured: [], popular: [], more: [] }
   }
 
-  const heroCount = Math.min(HERO_SIZE, total)
-  const sectionCount = Math.min(SECTION_SIZE, total)
+  const newest = sortByNewest(articles)
+  const byId = new Map(newest.map((a) => [a.id, a]))
+  const used = new Set<string>()
 
-  const hero = articles.slice(0, heroCount)
+  const curatedHero = resolveArticle(options.heroArticle, byId)
+  const curatedFeed = (options.feedArticles || [])
+    .map((item) => resolveArticle(item, byId))
+    .filter(Boolean) as TArticle[]
 
-  // Offsets spread sections across the catalog; wrap when there are few articles.
-  const recentOffset = Math.min(heroCount, total - 1)
-  const featuredOffset = 0
-  const popularOffset = Math.min(Math.floor(total / 3), total - 1)
-  const moreOffset = Math.min(heroCount + sectionCount, total - 1)
-
-  return {
-    hero,
-    recent: getSectionArticles(articles, recentOffset, sectionCount),
-    featured: getSectionArticles(articles, featuredOffset, sectionCount),
-    popular: getSectionArticles(articles, popularOffset, sectionCount),
-    more: getSectionArticles(articles, moreOffset, sectionCount),
+  let hero: TArticle[] = []
+  if (curatedHero) {
+    used.add(articleKey(curatedHero))
+    const side = takeUnused(
+      curatedFeed.length ? curatedFeed : newest,
+      HERO_SIDE_SIZE,
+      used
+    )
+    hero = preferCoverLead([curatedHero, ...side])
+  } else if (curatedFeed.length) {
+    hero = preferCoverLead(takeUnused(curatedFeed, HERO_SIDE_SIZE + 1, used))
+  } else {
+    hero = preferCoverLead(takeUnused(newest, HERO_SIDE_SIZE + 1, used))
   }
+
+  const recent = takeUnused(newest, SECTION_SIZE, used)
+
+  const starred = newest.filter((a) => a.featured)
+  const rated = sortByRating(
+    newest.filter((a) => (a.ratingCount || 0) > 0 && averageRating(a) >= 3.5)
+  )
+  const featuredPool = starred.length ? starred : rated.length ? rated : newest
+  let featured = takeUnused(featuredPool, SECTION_SIZE, used)
+  if (featured.length < Math.min(3, newest.length)) {
+    featured = featured.concat(
+      takeUnused(sortByRating(newest), SECTION_SIZE - featured.length, used)
+    )
+  }
+  if (featured.length === 0) {
+    featured = takeUnused(newest, Math.min(SECTION_SIZE, newest.length), used)
+  }
+
+  const viewed = sortByViews(newest.filter((a) => (a.views || 0) > 0))
+  const popularPool = viewed.length ? viewed : sortByViews(newest)
+  let popular = takeUnused(popularPool, SECTION_SIZE, used)
+  if (popular.length < Math.min(3, newest.length)) {
+    popular = popular.concat(
+      takeUnused(sortByViews(newest), SECTION_SIZE - popular.length, used)
+    )
+  }
+  if (popular.length === 0) {
+    popular = takeUnused(newest, Math.min(SECTION_SIZE, newest.length), used)
+  }
+
+  // Keep columns visually balanced
+  const pairSize = Math.min(
+    SECTION_SIZE,
+    Math.max(featured.length, popular.length),
+    Math.max(featured.length + popular.length, 1)
+  )
+  if (featured.length < pairSize) {
+    featured = featured.concat(
+      takeUnused(newest, pairSize - featured.length, used)
+    )
+  }
+  if (popular.length < pairSize) {
+    popular = popular.concat(
+      takeUnused(sortByViews(newest), pairSize - popular.length, used)
+    )
+  }
+
+  const more = takeUnused(newest, SECTION_SIZE, used)
+
+  return { hero, recent, featured, popular, more }
 }
