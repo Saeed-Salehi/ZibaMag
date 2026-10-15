@@ -14,7 +14,11 @@ const Nav = ({ categories }: { categories: TCategory[] }) => {
   return (
     <nav
       aria-label="Categories Nav"
-      className={cn('site-nav', isHidden && 'site-nav-hidden')}
+      className={cn(
+        'site-nav',
+        'site-nav-desktop',
+        isHidden && 'site-nav-hidden'
+      )}
     >
       <div className="site-nav-inner">
         <Link href="/">

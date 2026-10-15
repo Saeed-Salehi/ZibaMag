@@ -97,9 +97,15 @@ body {
   padding: 5rem 1.5rem 4rem;
 }
 
-/* Nav already clears the fixed header — keep content close underneath */
+/* Mobile: no visible category bar — clear fixed header */
 .site-main-with-nav {
-  padding-top: 1.25rem;
+  padding-top: 5rem;
+}
+
+@media (min-width: 768px) {
+  .site-main-with-nav {
+    padding-top: 1.25rem;
+  }
 }
 
 .site-main-reading {
@@ -271,11 +277,13 @@ body {
 
 .medium-hero-main h3 {
   font-family: var(--font-serif);
-  font-size: clamp(1.75rem, 3vw, 2.35rem);
-  line-height: 1.2;
+  font-size: clamp(1.5rem, 3vw, 2.35rem);
+  line-height: 1.25;
   letter-spacing: -0.025em;
   margin: 0.75rem 0 0.75rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .medium-hero-main .dek {
@@ -340,32 +348,39 @@ body {
 }
 
 .site-nav {
-  position: sticky;
-  top: 3.5rem;
-  z-index: 20;
-  margin-top: 3.5rem; /* clear fixed header */
-  background: var(--secondary);
-  border-bottom: 1px solid var(--primary-10);
-  transform: translateY(0);
-  transition: transform 0.25s ease;
-}
-
-.site-nav-hidden {
-  transform: translateY(-100%);
-}
-
-.site-nav-inner {
-  max-width: var(--page-width);
-  margin: 0 auto;
-  padding: 0 1.25rem;
-  display: flex;
-  gap: 0.25rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.site-nav-inner::-webkit-scrollbar {
   display: none;
+}
+
+@media (min-width: 768px) {
+  .site-nav-desktop {
+    display: block;
+    position: sticky;
+    top: 3.5rem;
+    z-index: 20;
+    margin-top: 3.5rem; /* clear fixed header */
+    background: var(--secondary);
+    border-bottom: 1px solid var(--primary-10);
+    transform: translateY(0);
+    transition: transform 0.25s ease;
+  }
+
+  .site-nav-hidden {
+    transform: translateY(-100%);
+  }
+
+  .site-nav-inner {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .site-nav-inner::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .nav-link {
@@ -500,9 +515,37 @@ body {
 }
 
 .theme-switch {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1px solid var(--primary-10);
+  border-radius: 999px;
+  background: var(--secondary);
+}
+
+.theme-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--primary-40);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.theme-switch-btn:hover {
+  color: var(--primary);
+  background: var(--primary-05);
+}
+
+.theme-switch-btn-active {
+  color: var(--primary);
+  background: var(--primary-10);
 }
 
 .search-panel {

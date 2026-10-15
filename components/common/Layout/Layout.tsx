@@ -27,7 +27,7 @@ const Layout = ({ children, navigation, isMarkdown = false }: Props) => {
 
   return (
     <>
-      <Header />
+      <Header categories={showNav ? navigation!.categories : undefined} />
       {showNav && <Nav categories={navigation!.categories} />}
 
       <main
