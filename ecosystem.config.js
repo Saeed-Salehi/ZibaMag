@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'zibamag',
-      cwd: '.',
+      cwd: __dirname,
       script: 'yarn',
       args: 'start',
       interpreter: 'none',
