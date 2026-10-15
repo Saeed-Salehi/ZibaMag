@@ -49,42 +49,61 @@ export function isStrapiMediaUrl(url: string) {
   return false
 }
 
-export async function fetchAPI(path: string) {
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export async function fetchAPI(path: string, retries = 3) {
   const requestUrl = getStrapiURL(path)
-  const response = await fetch(requestUrl)
-  const contentType = response.headers.get('content-type') || ''
-  const body = await response.text()
+  let lastError: Error | null = null
 
-  if (!contentType.includes('application/json')) {
-    throw new Error(
-      `Strapi returned non-JSON (${response.status}, ${
-        contentType || 'unknown type'
-      }) for ${requestUrl}. ` +
-        'API_URL must point at the Strapi API (e.g. http://127.0.0.1:1337), not the admin UI host.'
-    )
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(requestUrl)
+      const contentType = response.headers.get('content-type') || ''
+      const body = await response.text()
+
+      if (!contentType.includes('application/json')) {
+        throw new Error(
+          `Strapi returned non-JSON (${response.status}, ${
+            contentType || 'unknown type'
+          }) for ${requestUrl}. ` +
+            'API_URL must point at the Strapi API (e.g. http://127.0.0.1:1337), not the admin UI host.'
+        )
+      }
+
+      let data: any
+      try {
+        data = JSON.parse(body)
+      } catch {
+        throw new Error(
+          `Strapi returned invalid JSON (${response.status}) for ${requestUrl}. ` +
+            'Check that API_URL is the API base, not an HTML page.'
+        )
+      }
+
+      if (!response.ok || data?.statusCode >= 400) {
+        throw new Error(
+          `Strapi request failed (${
+            data?.statusCode ?? response.status
+          }) for ${requestUrl}. ` +
+            'In Strapi admin go to Settings → Users & Permissions → Public and enable "find" ' +
+            'for Article, Category, Contributor, and Pages.'
+        )
+      }
+
+      return data
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+      const transient = /fetch failed|ECONNRESET|ECONNREFUSED|ETIMEDOUT|socket hang up|network/i.test(
+        lastError.message
+      )
+      if (!transient || attempt === retries) break
+      await sleep(400 * attempt)
+    }
   }
 
-  let data: any
-  try {
-    data = JSON.parse(body)
-  } catch {
-    throw new Error(
-      `Strapi returned invalid JSON (${response.status}) for ${requestUrl}. ` +
-        'Check that API_URL is the API base, not an HTML page.'
-    )
-  }
-
-  if (!response.ok || data?.statusCode >= 400) {
-    throw new Error(
-      `Strapi request failed (${
-        data?.statusCode ?? response.status
-      }) for ${requestUrl}. ` +
-        'In Strapi admin go to Settings → Users & Permissions → Public and enable "find" ' +
-        'for Article, Category, Contributor, and Pages.'
-    )
-  }
-
-  return data
+  throw lastError || new Error(`Strapi request failed for ${requestUrl}`)
 }
 
 export type TContactMessagePayload = {
