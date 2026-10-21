@@ -175,9 +175,28 @@ export async function recordArticleView(articleId: number) {
   return response.json()
 }
 
+export type TRatingResult = {
+  ratingSum: number
+  ratingCount: number
+  average: number
+  userRating: number | null
+  status: 'created' | 'updated' | 'unchanged' | null
+}
+
+export async function getArticleRating(
+  articleId: number
+): Promise<TRatingResult | null> {
+  const response = await fetch(`/api/articles/${articleId}/rate`, {
+    credentials: 'same-origin',
+  })
+  if (!response.ok) return null
+  return response.json()
+}
+
 export async function rateArticle(articleId: number, rating: number) {
   const response = await fetch(`/api/articles/${articleId}/rate`, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ rating }),
   })
@@ -185,7 +204,7 @@ export async function rateArticle(articleId: number, rating: number) {
   if (!response.ok) {
     throw new Error(data?.message || 'Failed to rate article')
   }
-  return data
+  return data as TRatingResult
 }
 
 export async function submitComment(payload: {

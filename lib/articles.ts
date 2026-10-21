@@ -12,10 +12,20 @@ export function publishedAtMs(article: TArticle): number {
   return Number.isFinite(value) ? value : 0
 }
 
-export function averageRating(article: TArticle): number {
-  const count = article.ratingCount || 0
-  if (!count) return 0
-  return (article.ratingSum || 0) / count
+export function averageRating(article: {
+  ratingSum?: number
+  ratingCount?: number
+  average?: number
+}): number {
+  if (typeof article.average === 'number' && Number.isFinite(article.average)) {
+    return Math.min(5, Math.max(0, article.average))
+  }
+  const count = Number(article.ratingCount) || 0
+  if (count <= 0) return 0
+  const sum = Number(article.ratingSum) || 0
+  const average = sum / count
+  if (!Number.isFinite(average) || average <= 0) return 0
+  return Math.min(5, average)
 }
 
 export function sortByNewest(articles: TArticle[]): TArticle[] {

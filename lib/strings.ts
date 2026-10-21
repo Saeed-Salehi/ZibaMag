@@ -90,10 +90,15 @@ export const STRINGS = {
   commentError: 'ارسال نظر با مشکل مواجه شد.',
   noComments: 'هنوز نظری ثبت نشده است.',
   rateArticle: 'امتیاز دهید',
-  ratingThanks: 'از امتیاز شما ممنونیم!',
+  ratingThanks: 'امتیاز شما ثبت شد.',
+  ratingUpdated: 'امتیاز قبلی شما با این امتیاز جایگزین شد.',
+  ratingKept: 'همین امتیاز قبلاً ثبت شده است.',
   ratingError: 'ثبت امتیاز ممکن نشد.',
+  yourRating: (value: number) =>
+    `امتیاز شما: ${value.toLocaleString('fa-IR')} از ۵`,
+  ratingSummary: (average: string, count: string) =>
+    `${average} از ۵ · ${count} رأی`,
   views: 'بازدید',
-  rating: 'امتیاز',
   mostViewed: 'پربازدیدترین',
   highestRated: 'بالاترین امتیاز',
   tags: 'برچسب‌ها',
