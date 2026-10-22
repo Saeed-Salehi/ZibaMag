@@ -17,15 +17,18 @@ export function averageRating(article: {
   ratingCount?: number
   average?: number
 }): number {
+  const clampRound = (value: number) => {
+    if (!Number.isFinite(value) || value <= 0) return 0
+    return Math.min(5, Math.round(value * 10) / 10)
+  }
+
   if (typeof article.average === 'number' && Number.isFinite(article.average)) {
-    return Math.min(5, Math.max(0, article.average))
+    return clampRound(article.average)
   }
   const count = Number(article.ratingCount) || 0
   if (count <= 0) return 0
   const sum = Number(article.ratingSum) || 0
-  const average = sum / count
-  if (!Number.isFinite(average) || average <= 0) return 0
-  return Math.min(5, average)
+  return clampRound(sum / count)
 }
 
 export function sortByNewest(articles: TArticle[]): TArticle[] {

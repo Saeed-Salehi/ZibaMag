@@ -39,65 +39,63 @@ const CommentSection = ({ articleId, comments }: Props) => {
       <h2 className="article-engagement-title">{STRINGS.comments}</h2>
 
       {comments.length === 0 ? (
-        <p className="text-primary-60 mb-8">{STRINGS.noComments}</p>
+        <p className="comment-empty">{STRINGS.noComments}</p>
       ) : (
-        <ul className="space-y-6 mb-10">
+        <ul className="comment-list">
           {comments.map((comment) => (
-            <li key={comment.id} className="bg-primary-05 rounded-xl p-5">
-              <div className="flex items-center justify-between gap-3 mb-2">
+            <li key={comment.id} className="comment-item">
+              <div className="comment-item-meta">
                 <strong>{comment.authorName}</strong>
                 <Date
                   date={comment.created_at as string}
                   className="text-sm text-primary-60"
                 />
               </div>
-              <p className="leading-relaxed whitespace-pre-wrap">
-                {comment.body}
-              </p>
+              <p className="comment-item-body">{comment.body}</p>
             </li>
           ))}
         </ul>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-4 max-w-xl">
+      <form onSubmit={onSubmit} className="comment-form">
         <div>
-          <label className="block text-sm mb-1" htmlFor="comment-name">
+          <label className="comment-label" htmlFor="comment-name">
             {STRINGS.yourName}
           </label>
           <input
             id="comment-name"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full border border-primary-20 rounded-lg px-3 py-2 bg-secondary"
+            className="comment-input"
             required
             maxLength={80}
           />
         </div>
         <div>
-          <label className="block text-sm mb-1" htmlFor="comment-body">
+          <label className="comment-label" htmlFor="comment-body">
             {STRINGS.yourComment}
           </label>
           <textarea
             id="comment-body"
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            className="w-full border border-primary-20 rounded-lg px-3 py-2 bg-secondary min-h-[120px]"
+            className="comment-input comment-textarea"
             required
             maxLength={2000}
           />
         </div>
-        <button
-          type="submit"
-          disabled={busy}
-          className="bg-accent text-white px-5 py-2.5 rounded-lg font-bold hover:opacity-90 disabled:opacity-60"
-        >
+        <button type="submit" disabled={busy} className="comment-submit">
           {STRINGS.writeComment}
         </button>
         {status === 'ok' && (
-          <p className="text-sm text-accent">{STRINGS.commentSuccess}</p>
+          <p className="rating-toast" role="status">
+            {STRINGS.commentSuccess}
+          </p>
         )}
         {status === 'error' && (
-          <p className="text-sm text-accent">{STRINGS.commentError}</p>
+          <p className="rating-toast rating-toast-error" role="status">
+            {STRINGS.commentError}
+          </p>
         )}
       </form>
     </section>

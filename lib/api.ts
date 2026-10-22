@@ -1,3 +1,5 @@
+import { readClientVoter, rememberVoterFromPayload } from './client-voter'
+
 const DEFAULT_API_URL = 'http://127.0.0.1:1337'
 
 function normalizeApiBaseUrl(url: string) {
@@ -181,6 +183,19 @@ export type TRatingResult = {
   average: number
   userRating: number | null
   status: 'created' | 'updated' | 'unchanged' | null
+  voterId?: string
+  voterSign?: string
+}
+
+function ratingHeaders(includeJson = false) {
+  const headers: Record<string, string> = {}
+  if (includeJson) headers['Content-Type'] = 'application/json'
+  const voter = readClientVoter()
+  if (voter) {
+    headers['x-voter-id'] = voter.voterId
+    headers['x-voter-sign'] = voter.voterSign
+  }
+  return headers
 }
 
 export async function getArticleRating(
@@ -188,22 +203,33 @@ export async function getArticleRating(
 ): Promise<TRatingResult | null> {
   const response = await fetch(`/api/articles/${articleId}/rate`, {
     credentials: 'same-origin',
+    headers: ratingHeaders(),
   })
   if (!response.ok) return null
-  return response.json()
+  const data = (await response.json()) as TRatingResult
+  rememberVoterFromPayload(data)
+  return data
 }
 
 export async function rateArticle(articleId: number, rating: number) {
+  const voter = readClientVoter()
+  const body: Record<string, unknown> = { rating }
+  if (voter) {
+    body.voterId = voter.voterId
+    body.voterSign = voter.voterSign
+  }
+
   const response = await fetch(`/api/articles/${articleId}/rate`, {
     method: 'POST',
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rating }),
+    headers: ratingHeaders(true),
+    body: JSON.stringify(body),
   })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
     throw new Error(data?.message || 'Failed to rate article')
   }
+  rememberVoterFromPayload(data)
   return data as TRatingResult
 }
 

@@ -1,12 +1,24 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getApiBaseUrl } from '@lib/api'
-import { readOrCreateVoter, readVoter, signVoter } from '@lib/rating-voter'
+import {
+  readOrCreateVoter,
+  resolveVoter,
+  signVoter,
+  voterPayload,
+} from '@lib/rating-voter'
 
 function voterHeaders(voterId: string) {
   return {
     'x-voter-id': voterId,
     'x-voter-sign': signVoter(voterId),
   }
+}
+
+function withVoter<T extends Record<string, unknown>>(
+  data: T,
+  voterId: string
+) {
+  return { ...data, ...voterPayload(voterId) }
 }
 
 export default async function handler(
@@ -19,12 +31,13 @@ export default async function handler(
   }
 
   if (req.method === 'GET') {
-    const voterId = readVoter(req)
+    // Establish a stable voter id early (cookie + returned credentials).
+    const voterId = resolveVoter(req, res)
     const response = await fetch(`${getApiBaseUrl()}/articles/${id}/rate`, {
-      headers: voterId ? voterHeaders(voterId) : {},
+      headers: voterHeaders(voterId),
     })
     const data = await response.json().catch(() => ({}))
-    return res.status(response.status).json(data)
+    return res.status(response.status).json(withVoter(data, voterId))
   }
 
   if (req.method !== 'POST') {
@@ -49,5 +62,5 @@ export default async function handler(
     body: JSON.stringify({ rating }),
   })
   const data = await response.json().catch(() => ({}))
-  return res.status(response.status).json(data)
+  return res.status(response.status).json(withVoter(data, voterId))
 }

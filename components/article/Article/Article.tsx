@@ -68,7 +68,7 @@ function Article({
 
       <Markdown content={article.content} />
 
-      <section className="article-engagement" aria-label={STRINGS.comments}>
+      <section className="article-engagement" aria-label={STRINGS.rateArticle}>
         <div className="article-engagement-block">
           <h2 className="article-engagement-title">{STRINGS.rateArticle}</h2>
           <StarRating article={article} />
